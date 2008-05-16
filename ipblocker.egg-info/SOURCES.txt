@@ -1,9 +1,14 @@
+db.cfg
+server.pem
 setup.cfg
 setup.py
 ipblocker/__init__.py
+ipblocker/model.py
 ipblocker.egg-info/PKG-INFO
 ipblocker.egg-info/SOURCES.txt
 ipblocker.egg-info/dependency_links.txt
 ipblocker.egg-info/entry_points.txt
 ipblocker.egg-info/not-zip-safe
+ipblocker.egg-info/paster_plugins.txt
 ipblocker.egg-info/top_level.txt
+scripts/ipblockerserver.py

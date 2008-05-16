@@ -46,6 +46,10 @@ class Block(object):
         return cls.query.filter(and_(cls.blocked!=None,cls.unblocked==None)).all()
 
     @classmethod
+    def get_blocked_ip(cls,ip):
+        return cls.query.filter(and_(cls.blocked!=None,cls.unblocked==None,cls.ip==ip)).first()
+
+    @classmethod
     def get_block_pending(cls):
         return cls.query.filter(cls.blocked==None).all()
 
@@ -72,7 +76,14 @@ def block_ip(ip, who, comment, duration):
     now = datetime.datetime.now()
     diff = datetime.timedelta(seconds=duration)
     unblock_at = now + diff
-    b = Block(ip=ip, who=who, comment=comment, unblock_at=unblock_at)
+
+    b = Block.get_blocked_ip(ip)
+    if b:
+        b.who = who
+        b.comment = comment
+        b.unblock_at = unblock_at
+    else:
+        b = Block(ip=ip, who=who, comment=comment, unblock_at=unblock_at)
     Session.flush()
     return b
 

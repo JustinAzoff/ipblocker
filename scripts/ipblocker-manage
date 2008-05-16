@@ -1,0 +1,16 @@
+#!/usr/bin/python
+
+from ipblocker import model
+
+def main():
+    model.Session.clear()
+    for b in model.Block.get_unblock_pending():
+        print 'unblock', b
+        b.set_unblocked()
+
+    for b in model.Block.get_block_pending():
+        print 'block', b
+        b.set_blocked()
+
+if __name__ == "__main__":
+    main()

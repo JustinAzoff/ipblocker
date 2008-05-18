@@ -43,36 +43,44 @@ class Block(object):
 
     @classmethod
     def get_blocked(cls):
+        """Return a list of the currently blocked IPS"""
         return cls.query.filter(and_(cls.blocked!=None,cls.unblocked==None)).all()
 
     @classmethod
     def get_blocked_ip(cls,ip):
+        """Return a single Blocked IP, or None if it is not currently blocked"""
         return cls.query.filter(and_(cls.blocked!=None,cls.unblocked==None,cls.ip==ip)).first()
 
     @classmethod
     def get_block_pending(cls):
+        """Return a list of the IPS that are pending being blocked"""
         return cls.query.filter(cls.blocked==None).all()
 
     @classmethod
     def get_unblock_pending(cls):
+        """Return a list of the IPS that are pending being un-blocked"""
         return cls.query.filter(and_(
                 or_(cls.unblock_now==True, func.now() > cls.unblock_at),
                 cls.unblocked==None)).all()
 
     def set_blocked(self):
+        """Set this IP from pending block -> blocked"""
         self.blocked = datetime.datetime.now()
         Session.flush()
 
     def set_unblocked(self):
+        """Set this IP from blocked -> unblocked"""
         self.unblocked = datetime.datetime.now()
         Session.flush()
 
     def set_unblock_now(self):
+        """Set this IP to be unblocked"""
         self.unblock_now = True
         Session.flush()
     
 
 def block_ip(ip, who, comment, duration):
+    """Block this IP address"""
     now = datetime.datetime.now()
     diff = datetime.timedelta(seconds=duration)
     unblock_at = now + diff
@@ -92,6 +100,7 @@ def get_blocked_ip(ip):
     return b
 
 def unblock_ip(ip):
+    """Un-block this IP address"""
     b = get_blocked_ip(ip)
     if b:
         b.set_unblock_now()

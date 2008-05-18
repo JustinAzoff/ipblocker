@@ -1,12 +1,11 @@
 #!/usr/bin/python
 import sys
 
-from ipblocker import model
+from ipblocker import unblock_ip
 
-def unblock(ip):
-    b = model.Block.get_blocked_ip(ip)
-    b.set_unblock_now()
+if len(sys.argv) != 2:
+    print "Usage: %s ip" % sys.argv[0]
+    sys.exit(1)
 
-if __name__ == "__main__":
-    ip = sys.argv[1]
-    unblock(ip)
+ip = sys.argv[1]
+unblock_ip(ip)

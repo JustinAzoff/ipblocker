@@ -1,0 +1,15 @@
+#!/usr/bin/python
+import sys
+import os
+
+from ipblocker import block_ip
+
+if len(sys.argv) != 4:
+    print "Usage: %s ip comment duration" % sys.argv[0]
+    sys.exit(1)
+
+user = os.getenv("USER")
+
+ip, comment,duration = sys.argv[1:]
+duration = int(duration)
+block_ip(ip=ip, who=user, comment=comment, duration=duration)

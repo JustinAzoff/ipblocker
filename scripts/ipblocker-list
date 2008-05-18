@@ -2,15 +2,15 @@
 from ipblocker import model
 
 print "Blocked"
-for b in model.Block.get_blocked():
+for b in model.get_blocked():
     print b.ip, b.unblock_at
 
 print
 print "Block Pending"
-for b in model.Block.get_block_pending():
+for b in model.get_block_pending():
     print b.ip
 
 print
 print "UnBlock Pending"
-for b in model.Block.get_unblock_pending():
+for b in model.get_unblock_pending():
     print b.ip

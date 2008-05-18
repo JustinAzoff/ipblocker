@@ -22,6 +22,8 @@ class PGInet(sqltypes.TypeEngine):
     def get_col_spec(self):
         return "INET"
 
+class DontBlockException(Exception):
+    pass
 
 blocks = Table('blocks', metadata,
     Column('id',        Integer, primary_key=True),
@@ -35,33 +37,17 @@ blocks = Table('blocks', metadata,
     Column('unblock_now',   Boolean, default=False,nullable=False)
 )
 
+dont_block = Table('dont_block', metadata,
+    Column('id',        Integer, primary_key=True),
+    Column('ip',        PGInet, index=True),
+    Column('who',       String(50), nullable=False),
+    Column('comment',   String, nullable=False),
+)
 
 class Block(object):
 
     def __repr__(self):
         return 'Block(ip="%s")' % self.ip
-
-    @classmethod
-    def get_blocked(cls):
-        """Return a list of the currently blocked IPS"""
-        return cls.query.filter(and_(cls.blocked!=None,cls.unblocked==None)).all()
-
-    @classmethod
-    def get_blocked_ip(cls,ip):
-        """Return a single Blocked IP, or None if it is not currently blocked"""
-        return cls.query.filter(and_(cls.blocked!=None,cls.unblocked==None,cls.ip==ip)).first()
-
-    @classmethod
-    def get_block_pending(cls):
-        """Return a list of the IPS that are pending being blocked"""
-        return cls.query.filter(cls.blocked==None).all()
-
-    @classmethod
-    def get_unblock_pending(cls):
-        """Return a list of the IPS that are pending being un-blocked"""
-        return cls.query.filter(and_(
-                or_(cls.unblock_now==True, func.now() > cls.unblock_at),
-                cls.unblocked==None)).all()
 
     def set_blocked(self):
         """Set this IP from pending block -> blocked"""
@@ -77,15 +63,43 @@ class Block(object):
         """Set this IP to be unblocked"""
         self.unblock_now = True
         Session.flush()
+
+def get_blocked():
+    """Return a list of the currently blocked IPS"""
+    return Block.query.filter(and_(Block.blocked!=None,Block.unblocked==None)).all()
+
+def get_blocked_ip(ip):
+    """Return a single Blocked IP, or None if it is not currently blocked"""
+    return Block.query.filter(and_(Block.blocked!=None,Block.unblocked==None,Block.ip==ip)).first()
+
+def get_block_pending():
+    """Return a list of the IPS that are pending being blocked"""
+    return Block.query.filter(Block.blocked==None).all()
+
+def get_unblock_pending():
+    """Return a list of the IPS that are pending being un-blocked"""
+    return Block.query.filter(and_(
+            or_(Block.unblock_now==True, func.now() > Block.unblock_at),
+            Block.unblocked==None)).all()
     
+def get_dont_block_record(ip):
+    """Return a record from the dont_block table for this ip, if one exists"""
+    r = dont_block.select(dont_block.c.ip.op(">>=")(ip)).execute().fetchall()
+    if r:
+        return r[0]
 
 def block_ip(ip, who, comment, duration):
     """Block this IP address"""
+
+    ex = get_dont_block_record(ip)
+    if ex:
+        raise DontBlockException("%s:%s" %(ex.who, ex.comment))
+
     now = datetime.datetime.now()
     diff = datetime.timedelta(seconds=duration)
     unblock_at = now + diff
 
-    b = Block.get_blocked_ip(ip)
+    b = get_blocked_ip(ip)
     if b:
         b.who = who
         b.comment = comment
@@ -93,10 +107,6 @@ def block_ip(ip, who, comment, duration):
     else:
         b = Block(ip=ip, who=who, comment=comment, unblock_at=unblock_at)
     Session.flush()
-    return b
-
-def get_blocked_ip(ip):
-    b = Block.get_blocked_ip(ip)
     return b
 
 def unblock_ip(ip):
@@ -113,3 +123,8 @@ mapper(Block, blocks)
 #CREATE INDEX idx_blocked_null   ON blocks (blocked)   WHERE blocked IS NULL;
 #CREATE INDEX idx_unblocked_null ON blocks (unblocked) WHERE unblocked IS NOT NULL;
 
+__all__ = '''
+    Block
+    get_blocked get_blocked_ip get_block_pending get_unblock_pending
+    get_dont_block_record
+    block_ip unblock_ip'''.split()

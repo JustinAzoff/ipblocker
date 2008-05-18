@@ -16,7 +16,7 @@ def do_stuff(ips):
 
 def unblock():
     unblock = {}
-    for b in model.Block.get_unblock_pending():
+    for b in model.get_unblock_pending():
         unblock[b.ip] = b
         print 'unblock', b
 
@@ -27,7 +27,7 @@ def unblock():
 
 def block():
     block = {}
-    for b in model.Block.get_block_pending():
+    for b in model.get_block_pending():
         block[b.ip] = b
         print 'block', b
 

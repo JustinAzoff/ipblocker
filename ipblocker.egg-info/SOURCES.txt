@@ -12,6 +12,8 @@ ipblocker.egg-info/not-zip-safe
 ipblocker.egg-info/paster_plugins.txt
 ipblocker.egg-info/requires.txt
 ipblocker.egg-info/top_level.txt
+scripts/ipblocker-block
+scripts/ipblocker-list
 scripts/ipblocker-manage
 scripts/ipblocker-server
 scripts/ipblocker-unblock-now

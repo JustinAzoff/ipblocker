@@ -1,4 +1,4 @@
-from ipblocker import model
+from ipblocker import *
 import time
 
 IP = '1.2.3.4'
@@ -8,7 +8,7 @@ def test_nothing_pending():
     assert len(pending)==0
 
 def test_block_ip():
-    block = model.block_ip(IP, 'justin', 'just testing', 3)
+    block = block_ip(IP, 'justin', 'just testing', 3)
     pending = model.Block.get_block_pending()
     assert len(pending)==1
     assert pending[0].ip == IP
@@ -30,7 +30,7 @@ def test_set_blocked():
     assert b.ip == IP
 
 def test_get_blocked_ip():
-    b = model.Block.get_blocked_ip(IP)
+    b = get_blocked_ip(IP)
     assert b.ip == IP
 
 def test_set_blocked_again():
@@ -38,7 +38,7 @@ def test_set_blocked_again():
     b = blocked[0]
     orig = b.unblock_at
 
-    block = model.block_ip(IP, 'justin', 'just testing', 3)
+    block = block_ip(IP, 'justin', 'just testing', 3)
     assert block is b
     print
     print 'original:', orig
@@ -64,6 +64,17 @@ def test_set_unblocked():
 def test_is_unblocked():
     blocked = model.Block.get_blocked()
     assert len(blocked)==0
+
+def test_unblock_now():
+    block = block_ip(IP, 'justin', 'just testing', 10)
+    block.set_blocked()
+
+    pending = model.Block.get_unblock_pending()
+    assert len(pending)==0
+    block.set_unblock_now()
+    pending = model.Block.get_unblock_pending()
+    assert len(pending)==1
+
 
 def test_cleanup():
     B = model.Block 

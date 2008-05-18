@@ -18,9 +18,11 @@ setup(name='ipblocker',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
+          "SQLAlchemy >= 0.4"
           # -*- Extra requirements: -*-
       ],
       entry_points="""
       # -*- Entry points: -*-
       """,
+      test_suite='nose.collector',
       )

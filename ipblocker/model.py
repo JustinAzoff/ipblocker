@@ -87,5 +87,20 @@ def block_ip(ip, who, comment, duration):
     Session.flush()
     return b
 
+def get_blocked_ip(ip):
+    b = Block.get_blocked_ip(ip)
+    return b
+
+def unblock_ip(ip):
+    b = get_blocked_ip(ip)
+    if b:
+        b.set_unblock_now()
+        return True
+    else:
+        return False
+
 mapper(Block, blocks)
+
+#CREATE INDEX idx_blocked_null   ON blocks (blocked)   WHERE blocked IS NULL;
+#CREATE INDEX idx_unblocked_null ON blocks (unblocked) WHERE unblocked IS NOT NULL;
 

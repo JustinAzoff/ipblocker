@@ -10,5 +10,9 @@ ipblocker.egg-info/dependency_links.txt
 ipblocker.egg-info/entry_points.txt
 ipblocker.egg-info/not-zip-safe
 ipblocker.egg-info/paster_plugins.txt
+ipblocker.egg-info/requires.txt
 ipblocker.egg-info/top_level.txt
-scripts/ipblockerserver.py
+scripts/ipblocker-manage
+scripts/ipblocker-server
+scripts/ipblocker-unblock-now
+tests/test_model.py

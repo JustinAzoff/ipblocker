@@ -81,20 +81,41 @@ def get_blocked_ip(ip):
     return Block.query.filter(and_(Block.unblocked==None,Block.ip==ip)).first()
 
 def get_block_pending():
-    """Return a list of the IPS that are pending being blocked"""
-    return Block.query.filter(and_(Block.blocked==None,Block.unblock_now==False)).all()
+    """Return a list of the IPS that are pending being blocked
+       Also checks the dont_block table for any addresses that were set to be not blocked
+       after an address was blocked
+    """
+    #I think this is clearer if I write it like this, then using NOT EXISTS
+    #performance may suffer if I block 1000 IPS, but that should be rare
+    ret = []
+    for b in Block.query.filter(and_(Block.blocked==None,Block.unblock_now==False)).all():
+        if ok_to_block(b.ip):
+            ret.append(b)
+    return ret
 
 def get_unblock_pending():
-    """Return a list of the IPS that are pending being un-blocked"""
-    return Block.query.filter(and_(
-            or_(Block.unblock_now==True, func.now() > Block.unblock_at),
-            Block.unblocked==None)).all()
+    """Return a list of the IPS that are pending being un-blocked
+       Also checks the dont_block table for any addresses that were set to be not blocked
+       after an address was blocked
+    """
+    return Block.query.filter(and_(Block.unblocked==None,
+            or_(
+                Block.unblock_now==True,                   #force unblock
+                func.now() > Block.unblock_at,             #block expired
+                dont_block.c.ip.op(">>=")(Block.ip),       #ip shouldn't be blocked
+            ))).all()
     
 def get_dont_block_record(ip):
     """Return a record from the dont_block table for this ip, if one exists"""
     r = dont_block.select(dont_block.c.ip.op(">>=")(ip)).execute().fetchall()
     if r:
         return r[0]
+
+def ok_to_block(ip):
+    """Is this IP ok to block?"""
+    r = get_dont_block_record(ip)
+    return not r
+
 
 def block_ip(ip, who, comment, duration):
     """Block this IP address"""

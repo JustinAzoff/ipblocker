@@ -54,7 +54,8 @@ class Block(object):
 
     def set_blocked(self):
         """Set this IP from pending block -> blocked"""
-        self.blocked = datetime.datetime.now()
+        if not self.blocked:
+            self.blocked = datetime.datetime.now()
         Session.flush()
 
     def set_unblocked(self):
@@ -70,6 +71,19 @@ class Block(object):
 def get_all():
     """Return a list of all the blocked and pending IPS"""
     return Block.query.filter(Block.unblocked==None).all()
+
+def get_all_that_should_be_blocked():
+    """Return a list of all the blocked and pending IPS"""
+    #this should probably use NOT EXISTS, the performance impact will be worse than get_block_pending
+    ret = []
+    for b in Block.query.filter(and_(
+            Block.unblocked==None,            #hasn't been unblocked yet
+            Block.unblock_now == False,       #it isn't forced unblocked
+            func.now() < Block.unblock_at,   #it hasn't timed out yet
+            )).all():
+        if ok_to_block(b.ip):
+            ret.append(b)
+    return ret
 
 def get_blocked():
     """Return a list of the currently blocked IPS"""

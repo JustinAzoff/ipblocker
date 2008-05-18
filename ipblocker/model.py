@@ -44,8 +44,11 @@ dont_block = Table('dont_block', metadata,
     Column('comment',   String, nullable=False),
 )
 
+#and IP can be pending blocked, but then set unblock_now
+#at this point, blocked=NULL, unblocked=NULL
+#the manager should try and unblock it(a noop) and then set
+#unblocked=now(), so blocked will still be NULL
 class Block(object):
-
     def __repr__(self):
         return 'Block(ip="%s")' % self.ip
 
@@ -64,17 +67,22 @@ class Block(object):
         self.unblock_now = True
         Session.flush()
 
+def get_all():
+    """Return a list of all the blocked and pending IPS"""
+    return Block.query.filter(Block.unblocked==None).all()
+
 def get_blocked():
     """Return a list of the currently blocked IPS"""
     return Block.query.filter(and_(Block.blocked!=None,Block.unblocked==None)).all()
 
 def get_blocked_ip(ip):
-    """Return a single Blocked IP, or None if it is not currently blocked"""
-    return Block.query.filter(and_(Block.blocked!=None,Block.unblocked==None,Block.ip==ip)).first()
+    """Return a single Blocked IP, or None if it is not currently blocked
+       Pending is considered Blocked, otherwise unblock_now won't work right"""
+    return Block.query.filter(and_(Block.unblocked==None,Block.ip==ip)).first()
 
 def get_block_pending():
     """Return a list of the IPS that are pending being blocked"""
-    return Block.query.filter(Block.blocked==None).all()
+    return Block.query.filter(and_(Block.blocked==None,Block.unblock_now==False)).all()
 
 def get_unblock_pending():
     """Return a list of the IPS that are pending being un-blocked"""

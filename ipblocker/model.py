@@ -8,7 +8,7 @@ import ConfigParser
 import datetime
 
 c = ConfigParser.ConfigParser()
-c.read(['/etc/ipblocker/db.cfg','db.cfg'])
+c.read(['/etc/ipblocker/ipblocker.cfg','ipblocker.cfg'])
 engine = create_engine(c.get('db','uri'))
 Session = scoped_session(sessionmaker(autoflush=True, transactional=False, bind=engine))
 metadata = MetaData(bind=engine)

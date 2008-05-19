@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from ipblocker import model
+from ipblocker import model, logger
 from ipblocker.fake_ciscolib import login
 import mymemcache
 import time
@@ -11,9 +11,9 @@ def unblock(c):
     for b in model.get_unblock_pending():
         if b.ip in current:
             to_unblock[b.ip] = b
-            print 'unblock', b
+            logger.info("unblocking %s" % b.ip)
         else:
-            print "already unblocked", b
+            logger.warning("already unblocked %s" % b.ip)
             b.set_unblocked()
 
     if not to_unblock:
@@ -26,7 +26,7 @@ def unblock(c):
         if b.ip not in current:
             b.set_unblocked()
         else:
-            print "error unblocking", b.ip
+            logger.error("error unblocking %s" % b.ip)
 
 def block(c):
     current = set(c.nullroute_list())
@@ -34,9 +34,9 @@ def block(c):
     for b in model.get_block_pending():
         if b.ip not in current:
             to_block[b.ip] = b
-            print 'block', b
+            logger.info("blocking %s" % b.ip)
         else:
-            print "already blocked", b
+            logger.warning("already blocked %s" % b.ip)
             b.set_blocked()
 
     if not to_block:
@@ -49,7 +49,7 @@ def block(c):
         if b.ip in current:
             b.set_blocked()
         else:
-            print "error blocking", b.ip
+            logger.error("error blocking %s" % b.ip)
 
 def main():
     model.Session.clear()
@@ -57,12 +57,12 @@ def main():
     try:
         unblock(c)
     except Exception, e:
-        print "error unblocking", e
+        logger.error("error unblocking %s" % e)
 
     try:
         block(c)
     except Exception, e:
-        print "error blocking", e
+        logger.error("error blocking %s" % e)
 
     mc = mymemcache.Client()
     mc['ipblocker:last_manager_runtime'] = time.ctime()

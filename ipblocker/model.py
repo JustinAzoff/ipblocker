@@ -61,12 +61,19 @@ class Block(object):
 
     def set_blocked(self):
         """Set this IP from pending block -> blocked"""
-        if not self.blocked:
-            self.blocked = datetime.datetime.now()
+        if self.blocked:
+            raise Exception("%s Already blocked!" % self.ip)
+        if self.unblocked:
+            raise Exception("%s Already unblocked!" % self.ip)
+        self.blocked = datetime.datetime.now()
         Session.flush()
 
     def set_unblocked(self):
         """Set this IP from blocked -> unblocked"""
+        if self.unblocked: 
+            raise Exception("%s Already unblocked!" % self.ip)
+        #if not self.blocked:
+        #    raise Exception("%s not blocked yet!!" % self.ip)
         self.unblocked = datetime.datetime.now()
         Session.flush()
 
@@ -109,6 +116,7 @@ def get_block_pending():
     return Block.query.filter(and_(
         Block.blocked==None, #it's not already blocked
         Block.unblock_now==False, #it isn't forced unblocked
+        func.now() < Block.unblock_at,    #it hasn't already timed out
         ~exists([1],dont_block.c.ip.op(">>=")(Block.ip)),
         )).all()
 

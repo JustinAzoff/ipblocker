@@ -1,35 +1,64 @@
 #!/usr/bin/python
 
 from ipblocker import model
+from ipblocker.fake_ciscolib import login
 
-def unblock():
-    unblock = {}
+def unblock(c):
+    current = set(c.nullroute_list())
+    to_unblock = {}
     for b in model.get_unblock_pending():
-        unblock[b.ip] = b
-        print 'unblock', b
+        if b.ip in current:
+            to_unblock[b.ip] = b
+            print 'unblock', b
+        else:
+            print "already unblocked", b
+            b.set_unblocked()
 
-    for b in unblock.values():
-        b.set_unblocked()
+    if not to_unblock:
+        return
 
-def block():
-    block = {}
+    c.nullroute_remove_many(to_unblock.keys())
+    current = set(c.nullroute_list())
+
+    for b in to_unblock.values():
+        if b.ip not in current:
+            b.set_unblocked()
+        else:
+            print "error unblocking", b.ip
+
+def block(c):
+    current = set(c.nullroute_list())
+    to_block = {}
     for b in model.get_block_pending():
-        block[b.ip] = b
-        print 'block', b
+        if b.ip not in current:
+            to_block[b.ip] = b
+            print 'block', b
+        else:
+            print "already blocked", b
+            b.set_blocked()
 
-    for b in block.values():
-        b.set_blocked()
+    if not to_block:
+        return
+
+    c.nullroute_add_many(to_block.keys())
+    current = set(c.nullroute_list())
+
+    for b in to_block.values():
+        if b.ip in current:
+            b.set_blocked()
+        else:
+            print "error blocking", b.ip
 
 def main():
     model.Session.clear()
-
+    c = login('')
     try:
-        unblock()
+        unblock(c)
     except Exception, e:
         print "error unblocking", e
 
     try:
-        block()
+        block(c)
     except Exception, e:
         print "error blocking", e
 

@@ -47,6 +47,7 @@ def test_set_blocked_again():
 
 def test_unblock_pending():
     pending = model.get_unblock_pending()
+    print pending
     assert len(pending)==0
     time.sleep(4)
     pending = model.get_unblock_pending()
@@ -74,6 +75,22 @@ def test_unblock_now():
     block.set_unblock_now()
     pending = model.get_unblock_pending()
     assert len(pending)==1
+
+
+def test_dont_block():
+    b = model.get_dont_block_record(IP)
+    assert b is None
+    model.add_dont_block_record(IP, 'justin','testing')
+    b = model.get_dont_block_record(IP)
+    assert b.ip == IP
+    try:
+        block = block_ip(IP, 'justin', 'just testing', 3)
+        raise Exception('Did not prevent %s from being blocked' % IP)
+    except model.DontBlockException:
+        pass
+    model.delete_dont_block_record(b.id)
+    b = model.get_dont_block_record(IP)
+    assert b is None
 
 
 def test_cleanup():

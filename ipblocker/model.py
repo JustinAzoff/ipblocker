@@ -23,7 +23,13 @@ class PGInet(sqltypes.TypeEngine):
         return "INET"
 
 class DontBlockException(Exception):
-    pass
+    def __init__(self, ip, who, comment):
+        self.ip = ip
+        self.who = who
+        self.comment = comment
+    def __str__(self):
+        return "Dont Block Exception for %s (%s: %s)" % (
+            self.ip, self.who, self.comment)
 
 blocks = Table('blocks', metadata,
     Column('id',        Integer, primary_key=True),
@@ -42,6 +48,7 @@ dont_block = Table('dont_block', metadata,
     Column('ip',        PGInet, index=True),
     Column('who',       String(50), nullable=False),
     Column('comment',   String, nullable=False),
+    Column('entered',   DateTime, default=datetime.datetime.now),
 )
 
 #and IP can be pending blocked, but then set unblock_now
@@ -68,22 +75,22 @@ class Block(object):
         self.unblock_now = True
         Session.flush()
 
+class DontBlock(object):
+    def __repr__(self):
+        return 'DontBlock(ip="%s")' % self.ip
+
 def get_all():
     """Return a list of all the blocked and pending IPS"""
     return Block.query.filter(Block.unblocked==None).all()
 
 def get_all_that_should_be_blocked():
     """Return a list of all the blocked and pending IPS"""
-    #this should probably use NOT EXISTS, the performance impact will be worse than get_block_pending
-    ret = []
-    for b in Block.query.filter(and_(
+    return Block.query.filter(and_(
             Block.unblocked==None,            #hasn't been unblocked yet
             Block.unblock_now == False,       #it isn't forced unblocked
-            func.now() < Block.unblock_at,   #it hasn't timed out yet
-            )).all():
-        if ok_to_block(b.ip):
-            ret.append(b)
-    return ret
+            func.now() < Block.unblock_at,    #it hasn't timed out yet
+            ~exists([1],dont_block.c.ip.op(">>=")(Block.ip)),
+            )).all()
 
 def get_blocked():
     """Return a list of the currently blocked IPS"""
@@ -99,13 +106,11 @@ def get_block_pending():
        Also checks the dont_block table for any addresses that were set to be not blocked
        after an address was blocked
     """
-    #I think this is clearer if I write it like this, then using NOT EXISTS
-    #performance may suffer if I block 1000 IPS, but that should be rare
-    ret = []
-    for b in Block.query.filter(and_(Block.blocked==None,Block.unblock_now==False)).all():
-        if ok_to_block(b.ip):
-            ret.append(b)
-    return ret
+    return Block.query.filter(and_(
+        Block.blocked==None, #it's not already blocked
+        Block.unblock_now==False, #it isn't forced unblocked
+        ~exists([1],dont_block.c.ip.op(">>=")(Block.ip)),
+        )).all()
 
 def get_unblock_pending():
     """Return a list of the IPS that are pending being un-blocked
@@ -116,14 +121,26 @@ def get_unblock_pending():
             or_(
                 Block.unblock_now==True,                   #force unblock
                 func.now() > Block.unblock_at,             #block expired
-                dont_block.c.ip.op(">>=")(Block.ip),       #ip shouldn't be blocked
+                exists([1],dont_block.c.ip.op(">>=")(Block.ip)) #ip shouldn't be blocked
             ))).all()
-    
+
+def list_dont_block_records():
+    """Return the list of don't block records"""
+    return DontBlock.query.all()
+
+def add_dont_block_record(ip, who, comment):
+    b = DontBlock(ip=ip, who=who, comment=comment)
+    Session.flush()
+    return b
+
 def get_dont_block_record(ip):
     """Return a record from the dont_block table for this ip, if one exists"""
-    r = dont_block.select(dont_block.c.ip.op(">>=")(ip)).execute().fetchall()
+    r = DontBlock.query.filter(dont_block.c.ip.op(">>=")(ip)).all()
     if r:
         return r[0]
+
+def delete_dont_block_record(id):
+    dont_block.delete(dont_block.c.id==id).execute().close()
 
 def ok_to_block(ip):
     """Is this IP ok to block?"""
@@ -136,7 +153,7 @@ def block_ip(ip, who, comment, duration):
 
     ex = get_dont_block_record(ip)
     if ex:
-        raise DontBlockException("%s:%s" %(ex.who, ex.comment))
+        raise DontBlockException(ex.ip, ex.who, ex.comment)
 
     now = datetime.datetime.now()
     diff = datetime.timedelta(seconds=duration)
@@ -162,6 +179,7 @@ def unblock_ip(ip):
         return False
 
 mapper(Block, blocks)
+mapper(DontBlock, dont_block)
 
 #CREATE INDEX idx_blocked_null   ON blocks (blocked)   WHERE blocked IS NULL;
 #CREATE INDEX idx_unblocked_null ON blocks (unblocked) WHERE unblocked IS NOT NULL;

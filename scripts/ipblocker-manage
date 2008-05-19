@@ -2,25 +2,11 @@
 
 from ipblocker import model
 
-def do_stuff(ips):
-    if not ips:
-        return
-    import random
-    if random.random() < 0.4:
-        raise Exception("error")
-    if random.random() < 0.2:
-        print 'sleeping'
-        import time
-        time.sleep(1000)
-    return
-
 def unblock():
     unblock = {}
     for b in model.get_unblock_pending():
         unblock[b.ip] = b
         print 'unblock', b
-
-    do_stuff(unblock.keys())
 
     for b in unblock.values():
         b.set_unblocked()
@@ -30,8 +16,6 @@ def block():
     for b in model.get_block_pending():
         block[b.ip] = b
         print 'block', b
-
-    do_stuff(block.keys())
 
     for b in block.values():
         b.set_blocked()

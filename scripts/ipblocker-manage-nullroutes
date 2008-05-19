@@ -2,6 +2,8 @@
 
 from ipblocker import model
 from ipblocker.fake_ciscolib import login
+import mymemcache
+import time
 
 def unblock(c):
     current = set(c.nullroute_list())
@@ -61,6 +63,9 @@ def main():
         block(c)
     except Exception, e:
         print "error blocking", e
+
+    mc = mymemcache.Client()
+    mc['ipblocker:last_manager_runtime'] = time.ctime()
 
 
 if __name__ == "__main__":

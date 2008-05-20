@@ -7,12 +7,14 @@ import ConfigParser
 
 import datetime
 
-c = ConfigParser.ConfigParser()
-c.read(['/etc/ipblocker/ipblocker.cfg','ipblocker.cfg'])
-engine = create_engine(c.get('db','uri'))
+from ipblocker.config import config
+
+engine = create_engine(config.get('db','uri'))
 Session = scoped_session(sessionmaker(autoflush=True, transactional=False, bind=engine))
 metadata = MetaData(bind=engine)
 mapper = Session.mapper
+
+from webhelpers import distance_of_time_in_words
 
 class PGMac(sqltypes.TypeEngine):
     def get_col_spec(self):
@@ -81,6 +83,11 @@ class Block(object):
         """Set this IP to be unblocked"""
         self.unblock_now = True
         Session.flush()
+
+    def _get_unblock_at_relative(self):
+        now = datetime.datetime.now()
+        return distance_of_time_in_words(now, self.unblock_at)
+    unblock_at_relative = property(_get_unblock_at_relative)
 
 class DontBlock(object):
     def __repr__(self):

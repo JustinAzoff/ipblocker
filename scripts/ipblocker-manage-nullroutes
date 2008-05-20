@@ -1,10 +1,12 @@
 #!/usr/bin/python
 
 from ipblocker import model, logger
-from ipblocker.fake_ciscolib import login
+from cisco.ciscolib import login
+from ipblocker.config import config
 import mymemcache
 import time
 
+IP = config.get("nullrouter","ip")
 
 cisco_connection = None
 
@@ -14,7 +16,7 @@ def get_cisco():
         return cisco_connection
     
     logger.debug("Logging into router")
-    cisco_connection = c = login('')
+    cisco_connection = c = login(IP)
     logger.debug("Done logging into router")
     return c
 

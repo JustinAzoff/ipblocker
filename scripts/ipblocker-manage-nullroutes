@@ -5,10 +5,28 @@ from ipblocker.fake_ciscolib import login
 import mymemcache
 import time
 
-def unblock(c):
+
+cisco_connection = None
+
+def get_cisco():
+    global cisco_connection
+    if cisco_connection:
+        return cisco_connection
+    
+    logger.debug("Logging into router")
+    cisco_connection = c = login('')
+    logger.debug("Done logging into router")
+    return c
+
+def unblock():
+    unblock_pending = model.get_unblock_pending()
+    if not unblock_pending:
+        return
+
+    c = get_cisco()
     current = set(c.nullroute_list())
     to_unblock = {}
-    for b in model.get_unblock_pending():
+    for b in unblock_pending:
         if b.ip in current:
             to_unblock[b.ip] = b
             logger.info("unblocking %s" % b.ip)
@@ -28,10 +46,14 @@ def unblock(c):
         else:
             logger.error("error unblocking %s" % b.ip)
 
-def block(c):
+def block():
+    block_pending = model.get_block_pending()
+    if not block_pending:
+        return
+    c = get_cisco()
     current = set(c.nullroute_list())
     to_block = {}
-    for b in model.get_block_pending():
+    for b in block_pending:
         if b.ip not in current:
             to_block[b.ip] = b
             logger.info("blocking %s" % b.ip)
@@ -53,18 +75,19 @@ def block(c):
 
 def main():
     model.Session.clear()
-    logger.debug("Logging into router")
-    c = login('')
-    logger.debug("Done logging into router")
     try:
-        unblock(c)
+        unblock()
     except Exception, e:
         logger.error("error unblocking %s" % e)
 
     try:
-        block(c)
+        block()
     except Exception, e:
         logger.error("error blocking %s" % e)
+
+    if cisco_connection:
+        logger.debug("Logging out of router")
+        cisco_connection.logout()
 
     mc = mymemcache.Client(timeout=60*60)
     mc['ipblocker:last_manager_runtime'] = time.ctime()

@@ -53,7 +53,9 @@ def block(c):
 
 def main():
     model.Session.clear()
+    logger.debug("Logging into router")
     c = login('')
+    logger.debug("Done logging into router")
     try:
         unblock(c)
     except Exception, e:
@@ -64,7 +66,7 @@ def main():
     except Exception, e:
         logger.error("error blocking %s" % e)
 
-    mc = mymemcache.Client()
+    mc = mymemcache.Client(timeout=60*60)
     mc['ipblocker:last_manager_runtime'] = time.ctime()
 
 

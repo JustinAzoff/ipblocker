@@ -29,12 +29,11 @@ def unblock():
     current = set(c.nullroute_list())
     to_unblock = {}
     for b in unblock_pending:
-        if b.ip in current:
-            to_unblock[b.ip] = b
-            logger.info("unblocking %s" % b.ip)
+        to_unblock[b.ip] = b
+        if b.ip not in current:
+            logger.warning("already unblocked %s, unblocking anyway" % b.ip)
         else:
-            logger.warning("already unblocked %s" % b.ip)
-            b.set_unblocked()
+            logger.info("unblocking %s" % b.ip)
 
     if not to_unblock:
         return
@@ -56,12 +55,11 @@ def block():
     current = set(c.nullroute_list())
     to_block = {}
     for b in block_pending:
+        to_block[b.ip] = b
         if b.ip not in current:
-            to_block[b.ip] = b
             logger.info("blocking %s" % b.ip)
         else:
-            logger.warning("already blocked %s" % b.ip)
-            b.set_blocked()
+            logger.warning("already blocked %s, blocking anyway" % b.ip)
 
     if not to_block:
         return

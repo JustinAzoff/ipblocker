@@ -1,5 +1,6 @@
 from setuptools import setup, find_packages
 import sys, os
+from glob import glob
 
 version = '0.1'
 
@@ -25,4 +26,5 @@ setup(name='ipblocker',
       # -*- Entry points: -*-
       """,
       test_suite='nose.collector',
+      scripts=glob('scripts/*'),
       )

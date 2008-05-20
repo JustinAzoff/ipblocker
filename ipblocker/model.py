@@ -86,7 +86,11 @@ class Block(object):
 
     def _get_unblock_at_relative(self):
         now = datetime.datetime.now()
-        return distance_of_time_in_words(now, self.unblock_at)
+        diff = self.unblock_at - now
+        ago = ''
+        if abs(diff)!=diff:
+            ago=' ago'
+        return distance_of_time_in_words(now, self.unblock_at) + ago
     unblock_at_relative = property(_get_unblock_at_relative)
 
 class DontBlock(object):

@@ -3,7 +3,7 @@ from ipblocker import model
 
 print "Blocked"
 for b in model.get_blocked():
-    print b.ip, b.unblock_at
+    print b.ip, b.unblock_at, b.unblock_at_relative
 
 print
 print "Block Pending"

@@ -17,6 +17,9 @@ def get_cisco():
     
     logger.debug("Logging into router")
     cisco_connection = c = login(IP)
+    if not cisco_connection:
+        logger.error("Unable to login to router")
+        raise Exception("Unable to login to router")
     logger.debug("Done logging into router")
     return c
 

@@ -50,6 +50,10 @@ def unblock():
         else:
             logger.error("error unblocking %s" % b.ip)
 
+    out = c.write_mem()
+    out = ' '.join(out)
+    logger.info("write mem: %s" % out)
+
 def block():
     block_pending = model.get_block_pending()
     if not block_pending:

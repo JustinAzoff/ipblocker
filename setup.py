@@ -19,7 +19,8 @@ setup(name='ipblocker',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
-          "SQLAlchemy >= 0.4"
+          "SQLAlchemy >= 0.4",
+          "ren_isac",
           # -*- Extra requirements: -*-
       ],
       entry_points="""

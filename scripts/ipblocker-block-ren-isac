@@ -1,0 +1,30 @@
+#!/usr/bin/python
+
+from getpass import getpass
+import ren_isac
+import simplejson
+from ipblocker import model, logger
+
+DURATION = 60*60*24
+
+def block():
+    bt = ren_isac.bottrack("jazoff@uamail.albany.edu", getpass())
+    logger.debug("Fetching IP list from ren-isac")
+    all = bt.cncip()
+    logger.debug("Got %d ips" % len(all))
+    all_ips = set(r['ip'] for r in all)
+
+    for r in all:
+        msg = simplejson.dumps(r)
+        ip = r['ip']
+        model.block_ip(ip=ip, who='ren-isac', comment=msg, duration=DURATION)
+        logger.debug("blocking %s" % ip)
+
+    for b in model.get_all_that_should_be_blocked():
+        if b.who == 'ren-isac' and b.ip not in all_ips:
+            model.unblock_ip(b.ip)
+            logger.info("unblocking %s" % b.ip)
+        
+
+if __name__ == "__main__":
+    block()

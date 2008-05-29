@@ -9,7 +9,21 @@ import datetime
 
 from ipblocker.config import config
 
-engine = create_engine(config.get('db','uri'))
+import psycopg2
+import random
+
+def connect():
+    db_config = dict(config.items('db'))
+    hosts = db_config.pop('host').split(',')
+    random.shuffle(hosts)
+    for host in hosts:
+        try :
+            return psycopg2.connect(host=host, user=db_config['user'], password=db_config['password'], database=db_config['database'])
+        except Exception, e:
+            pass
+    raise e
+
+engine = create_engine('postgres://', creator=connect,pool_recycle=60)
 Session = scoped_session(sessionmaker(autoflush=True, transactional=False, bind=engine))
 metadata = MetaData(bind=engine)
 mapper = Session.mapper

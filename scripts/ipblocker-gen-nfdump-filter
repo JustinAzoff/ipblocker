@@ -1,0 +1,7 @@
+#!/usr/bin/python
+from ipblocker import model
+
+print "host in [",
+for b in model.get_all_that_should_be_blocked():
+    print b.ip,
+print "]"

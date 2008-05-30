@@ -5,28 +5,28 @@ password = ipblockerpassword
 database = ipblocker
 
 [nullrouter]
-ip = 192.168.5.1
+ip = 192.168.1.1
 
 [ri]
 username = 
-password =
+password = 
 
 [loggers]
 keys=root,ipblocker
 
 [handlers]
-keys=consoleHandler
+keys=consoleHandler,slogHandler
 
 [formatters]
-keys=simpleFormatter
+keys=simpleFormatter,slogFormatter
 
 [logger_root]
 level=DEBUG
-handlers=consoleHandler
+handlers=consoleHandler,slogHandler
 
 [logger_ipblocker]
 level=DEBUG
-handlers=consoleHandler
+handlers=consoleHandler,slogHandler
 qualname=simpleExample
 
 [handler_consoleHandler]
@@ -35,9 +35,16 @@ level=DEBUG
 formatter=simpleFormatter
 args=(sys.stdout,)
 
+[handler_slogHandler]
+class=handlers.SysLogHandler
+level=DEBUG
+formatter=slogFormatter
+args=("/dev/log",)
+
 [formatter_simpleFormatter]
 format=%(asctime)s - %(name)s - %(levelname)s - %(message)s
 datefmt=
 
-
-
+[formatter_slogFormatter]
+format=%(name)s - %(levelname)s - %(message)s
+datefmt=

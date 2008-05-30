@@ -98,6 +98,7 @@ def main():
 
     mc = mymemcache.Client(timeout=60*60)
     mc['ipblocker:last_manager_runtime'] = time.ctime()
+    model.engine.dispose()
 
 
 if __name__ == "__main__":

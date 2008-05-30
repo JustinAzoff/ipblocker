@@ -1,3 +1,4 @@
 
-      # -*- Entry points: -*-
+      [paste.app_install]
+      main = paste.script.appinstall:Installer
       

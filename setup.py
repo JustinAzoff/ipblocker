@@ -20,12 +20,14 @@ setup(name='ipblocker',
       zip_safe=False,
       install_requires=[
           "SQLAlchemy >= 0.4",
+          "WebHelpers",
           "ren_isac",
           "cisco",
           # -*- Extra requirements: -*-
       ],
       entry_points="""
-      # -*- Entry points: -*-
+      [paste.app_install]
+      main = paste.script.appinstall:Installer
       """,
       test_suite='nose.collector',
       scripts=glob('scripts/*'),

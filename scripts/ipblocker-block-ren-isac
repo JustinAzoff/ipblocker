@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-from getpass import getpass
 import ren_isac
 import simplejson
 from ipblocker import model, logger

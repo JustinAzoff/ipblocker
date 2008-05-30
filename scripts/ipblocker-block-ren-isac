@@ -18,12 +18,12 @@ def block():
         msg = simplejson.dumps(r)
         ip = r['ip']
         model.block_ip(ip=ip, who='ren-isac', comment=msg, duration=DURATION)
-        logger.debug("blocking %s" % ip)
+        logger.debug("DB-blocking %s" % ip)
 
     for b in model.get_all_that_should_be_blocked():
         if b.who == 'ren-isac' and b.ip not in all_ips:
             model.unblock_ip(b.ip)
-            logger.info("unblocking %s" % b.ip)
+            logger.info("DB-unblocking %s" % b.ip)
         
 
 if __name__ == "__main__":

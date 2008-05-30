@@ -4,11 +4,15 @@ from getpass import getpass
 import ren_isac
 import simplejson
 from ipblocker import model, logger
+from ipblocker.config import config
 
 DURATION = 60*60*24
 
 def block():
-    bt = ren_isac.bottrack("jazoff@uamail.albany.edu", getpass())
+    username = config.get("ri","username")
+    password = config.get("ri","password")
+
+    bt = ren_isac.bottrack(username, password)
     logger.debug("Fetching IP list from ren-isac")
     all = bt.cncip()
     logger.debug("Got %d ips" % len(all))

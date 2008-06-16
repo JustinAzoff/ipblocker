@@ -5,6 +5,8 @@ import os
 from itertools import groupby
 from operator import itemgetter
 
+import datetime
+
 sigs = [
     'ET SCAN LibSSH Based SSH Connection',
     'ET SCAN Potential SSH Scan',
@@ -14,6 +16,7 @@ sigs = [
 MINIMUM = 32
 SUBNET_MINIMUM = 3
 
+BLOCK_TIME = 60*60*24
 
 def group_by_func(it, func):
     ret = {}
@@ -63,14 +66,12 @@ def block(ip, alerts):
 
     block_record = get_blocked_ip(ip)
 
-
     if not block_record:
-        confirm = raw_input("Block %s? [type 'yes'] " % ip)
+        confirm = raw_input("Block %s ? [type 'yes'] " % ip)
         if confirm != 'yes':
             return False
 
-    user = os.getenv("USER")
-    block_ip(ip=ip, who=user, comment=txt, duration=60*60*24)
+    block_ip(ip=ip, who='snort', comment=txt, duration=BLOCK_TIME, extend_only=True)
 
     if block_record:
         print ip, 're-blocked'

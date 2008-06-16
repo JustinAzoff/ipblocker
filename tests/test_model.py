@@ -45,7 +45,27 @@ def test_set_blocked_again():
     print 'new     :', block.unblock_at
     assert block.unblock_at != orig
 
+def test_set_blocked_again_shorter_time_a():
+    block = block_ip(IP, 'justin', 'just testing', 60)
+    blocked = model.get_blocked()
+    b = blocked[0]
+    orig = b.unblock_at
+    block = block_ip(IP, 'justin', 'just testing', 10)
+    assert block is b
+    assert block.unblock_at != orig
+
+def test_set_blocked_again_shorter_time_b():
+    block = block_ip(IP, 'justin', 'just testing', 60)
+    blocked = model.get_blocked()
+    b = blocked[0]
+    orig = b.unblock_at
+    block = block_ip(IP, 'justin', 'just testing', 10, extend_only=True)
+    assert block is b
+    assert block.unblock_at == orig
+
 def test_unblock_pending():
+    #force this to be pending in 4 seconds
+    block = block_ip(IP, 'justin', 'just testing', 4)
     pending = model.get_unblock_pending()
     print pending
     assert len(pending)==0

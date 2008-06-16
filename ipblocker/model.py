@@ -107,6 +107,12 @@ class Block(object):
         return distance_of_time_in_words(now, self.unblock_at) + ago
     unblock_at_relative = property(_get_unblock_at_relative)
 
+    def _get_unblock_delta(self):
+        now = datetime.datetime.now()
+        diff = self.unblock_at - now
+        return diff
+    unblock_delta = property(_get_unblock_delta)
+
     def _get_unblock_pending(self):
         now = datetime.datetime.now()
         return  now > self.unblock_at
@@ -186,7 +192,7 @@ def ok_to_block(ip):
     return not r
 
 
-def block_ip(ip, who, comment, duration):
+def block_ip(ip, who, comment, duration, extend_only=False):
     """Block this IP address"""
 
     ex = get_dont_block_record(ip)
@@ -201,7 +207,8 @@ def block_ip(ip, who, comment, duration):
     if b:
         b.who = who
         b.comment = comment
-        b.unblock_at = unblock_at
+        if not ( extend_only and b.unblock_delta > diff ):
+            b.unblock_at = unblock_at
     else:
         b = Block(ip=ip, who=who, comment=comment, unblock_at=unblock_at)
     Session.flush()

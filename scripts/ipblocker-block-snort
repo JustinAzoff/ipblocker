@@ -1,8 +1,9 @@
 #!/usr/bin/env python 
 from snort import snortdb
-import group
 from ipblocker import block_ip, get_blocked_ip
 import os
+from itertools import groupby
+from operator import itemgetter
 
 sigs = [
     'ET SCAN LibSSH Based SSH Connection',
@@ -11,27 +12,41 @@ sigs = [
     'ET SCAN MYSQL 4.1 brute force root login attempt', 
 ]
 MINIMUM = 32
-DST_MINIMUM = 3
+SUBNET_MINIMUM = 3
 
-def num_destinations(alerts):
-    by_dst = group.group(alerts, 'ip_dst')
-    return len(by_dst)
+
+def group_by_func(it, func):
+    ret = {}
+    for x in it:
+        val = func(x)
+        ret.setdefault(val, []).append(x)
+    return ret
+
+
+def subnet(ip):
+    """1.2.3.4 -> 3"""
+    return (ip.int()/256)&255
+
+def num_subnets(alerts):
+    by_dst = groupby(alerts, lambda a: subnet(a['ip_dst']))
+    return len(list(by_dst))
 
 def do_sigs():
     snort=snortdb.sdb()
-    snort.setwhere(range='hour',span=24)
+    snort.setwhere(range='hour',span=1)
     alerts = []
     for sig in sigs:
         for a in snort.find(sig=sig):
             alerts.append(a)
-    by_src = group.group(alerts, 'ip_src')
+    by_src = groupby(alerts, itemgetter("ip_src"))
         
-    for ip, alerts in by_src.items():
-        if len(alerts) > MINIMUM and num_destinations(alerts) > DST_MINIMUM:
+    for ip, alerts in by_src:
+        alerts = list(alerts)
+        if len(alerts) >= MINIMUM and num_subnets(alerts) >= SUBNET_MINIMUM:
             yield ip, alerts
 
 def make_txt(alerts):
-    txt = "%d alerts (%d destinations)\n" % (len(alerts), num_destinations(alerts))
+    txt = "%d alerts (%d subnets)\n" % (len(alerts), num_subnets(alerts))
     for a in alerts[:5]:
         txt += "%(timestamp)s %(ip_src)s:%(sport)s -> %(ip_dst)s:%(dport)s %(sig)s\n" % a
     txt += "...\n"

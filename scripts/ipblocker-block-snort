@@ -1,0 +1,72 @@
+#!/usr/bin/env python 
+from snort import snortdb
+import group
+from ipblocker import block_ip, get_blocked_ip
+import os
+
+sigs = [
+    'ET SCAN LibSSH Based SSH Connection',
+    'ET SCAN Potential SSH Scan',
+    'ET SCAN Potential VNC Scan 5900-5920',
+    'ET SCAN MYSQL 4.1 brute force root login attempt', 
+]
+MINIMUM = 32
+DST_MINIMUM = 3
+
+def num_destinations(alerts):
+    by_dst = group.group(alerts, 'ip_dst')
+    return len(by_dst)
+
+def do_sigs():
+    snort=snortdb.sdb()
+    snort.setwhere(range='hour',span=24)
+    alerts = []
+    for sig in sigs:
+        for a in snort.find(sig=sig):
+            alerts.append(a)
+    by_src = group.group(alerts, 'ip_src')
+        
+    for ip, alerts in by_src.items():
+        if len(alerts) > MINIMUM and num_destinations(alerts) > DST_MINIMUM:
+            yield ip, alerts
+
+def make_txt(alerts):
+    txt = "%d alerts (%d destinations)\n" % (len(alerts), num_destinations(alerts))
+    for a in alerts[:5]:
+        txt += "%(timestamp)s %(ip_src)s:%(sport)s -> %(ip_dst)s:%(dport)s %(sig)s\n" % a
+    txt += "...\n"
+    for a in alerts[-5:]:
+        txt += "%(timestamp)s %(ip_src)s:%(sport)s -> %(ip_dst)s:%(dport)s %(sig)s\n" % a
+    return txt
+
+def block(ip, alerts):
+    ip = str(ip)
+    txt = make_txt(alerts)
+
+    print ip
+    print txt
+
+    block_record = get_blocked_ip(ip)
+
+
+    if not block_record:
+        confirm = raw_input("Block %s? [type 'yes'] " % ip)
+        if confirm != 'yes':
+            return False
+
+    user = os.getenv("USER")
+    block_ip(ip=ip, who=user, comment=txt, duration=60*60*24)
+
+    if block_record:
+        print ip, 're-blocked'
+    else:
+        print ip, 'blocked'
+    return True
+
+
+def main():
+    for ip, alerts in do_sigs():
+        block(ip, alerts)
+if __name__ == "__main__":
+    main()
+

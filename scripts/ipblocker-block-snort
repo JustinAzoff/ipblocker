@@ -3,7 +3,7 @@ from snort import snortdb
 from ipblocker import block_ip, get_blocked_ip
 from ipblocker import logger
 import os
-from itertools import groupby
+from ipblocker.util import groupby, subnet
 from operator import itemgetter
 
 import datetime
@@ -19,10 +19,6 @@ MINIMUM = 32
 SUBNET_MINIMUM = 3
 
 BLOCK_TIME = 60*60*24
-
-def subnet(ip):
-    """1.2.3.4 -> 3"""
-    return (ip.int()/256)&255
 
 def num_subnets(alerts):
     by_dst = groupby(alerts, lambda a: subnet(a['ip_dst']))

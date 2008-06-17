@@ -3,7 +3,7 @@ import pynfdump
 from ipblocker import block_ip, get_blocked_ip
 from ipblocker import logger
 import os
-from itertools import groupby
+from ipblocker.util import groupby, subnet
 from operator import itemgetter
 
 import datetime
@@ -75,7 +75,8 @@ def block(ip, flows, force_block=False):
 
 def main(do_confirm=False):
     for ip, flows in do_ports():
-        block(ip, flows, force_block)
+        #block(ip, flows, force_block)
+        print ip, len(flows)
 
 if __name__ == "__main__":
     from optparse import OptionParser

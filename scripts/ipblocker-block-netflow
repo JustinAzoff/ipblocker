@@ -69,7 +69,7 @@ def block(ip, flows, force_block=False):
     return True
 
 
-def main(do_confirm=False):
+def main(force_block=False):
     for ip, flows in do_ports():
         block(ip, flows, force_block)
 

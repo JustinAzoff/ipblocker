@@ -1,0 +1,85 @@
+#!/usr/bin/env python 
+import pynfdump
+from ipblocker import block_ip, get_blocked_ip
+from ipblocker import logger
+import os
+from itertools import groupby
+from operator import itemgetter
+
+import datetime
+
+MINIMUM = 32
+SUBNET_MINIMUM = 20
+
+BLOCK_TIME = 60*60*24
+
+ports = [
+    22,
+    3389,
+    5900,
+]
+
+def subnet(ip):
+    """1.2.3.4 -> 3"""
+    return (ip.int()/256)&255
+
+def num_subnets(flows):
+    by_dst = groupby(flows, lambda a: subnet(a['dst']))
+    return len(list(by_dst))
+
+def do_ports():
+    d=pynfdump.Dumper('/data/nfsen/profiles/',sources=['podium'],remote_host='root@glenn')
+    d.set_where(start=str(datetime.date.today()))
+
+    flows = []
+    for p in ports:
+        for a in d.search("dst port %d and dst net 169.226.0.0/16 and flags S and not flags A" % p, aggregate='srcip,dstip,dstport'):
+            flows.append(a)
+    by_src = groupby(flows, itemgetter("src"))
+        
+    for ip, flows in by_src:
+        flows = list(flows)
+        if len(flows) >= MINIMUM and num_subnets(flows) >= SUBNET_MINIMUM:
+            yield ip, flows
+
+def make_txt(flows):
+    txt = "%d flows (%d subnets)\n" % (len(flows), num_subnets(flows))
+    for a in flows[:5]:
+        txt += "%(last)s %(src)s:%(srcport)s -> %(dst)s:%(dstport)s\n" % a
+    txt += "...\n"
+    for a in flows[-5:]:
+        txt += "%(last)s %(src)s:%(srcport)s -> %(dst)s:%(dstport)s\n" % a
+    return txt
+
+def block(ip, flows, force_block=False):
+    ip = str(ip)
+    txt = make_txt(flows)
+
+
+    block_record = get_blocked_ip(ip)
+
+    if not block_record and not force_block:
+        print txt
+        confirm = raw_input("Block %s ? [type 'yes'] " % ip)
+        if confirm != 'yes':
+            return False
+
+    block_ip(ip=ip, who='snort', comment=txt, duration=BLOCK_TIME, extend_only=True)
+
+    if not block_record:
+        logger.info("%s blocked: %s" % (ip, txt))
+    else:
+        logger.debug("%s re-blocked" % ip)
+    return True
+
+
+def main(do_confirm=False):
+    for ip, flows in do_ports():
+        block(ip, flows, force_block)
+
+if __name__ == "__main__":
+    from optparse import OptionParser
+    parser = OptionParser()
+    parser.add_option("-f", "--force",  dest="force", action="store_true", help="block without confirmation",default=False)
+    (options, args) = parser.parse_args()
+    main(options.force)

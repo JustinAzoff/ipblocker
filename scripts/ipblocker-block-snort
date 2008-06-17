@@ -13,6 +13,7 @@ sigs = [
     'ET SCAN Potential SSH Scan',
     'ET SCAN Potential VNC Scan 5900-5920',
     'ET SCAN MYSQL 4.1 brute force root login attempt', 
+    'ET SCAN Behavioral Unusually fast Terminal Server Traffic, Potential Scan or Infection',
 ]
 MINIMUM = 32
 SUBNET_MINIMUM = 3
@@ -50,30 +51,34 @@ def make_txt(alerts):
         txt += "%(timestamp)s %(ip_src)s:%(sport)s -> %(ip_dst)s:%(dport)s %(sig)s\n" % a
     return txt
 
-def block(ip, alerts):
+def block(ip, alerts, force_block=False):
     ip = str(ip)
     txt = make_txt(alerts)
 
 
     block_record = get_blocked_ip(ip)
 
-    #if not block_record:
-    #    confirm = raw_input("Block %s ? [type 'yes'] " % ip)
-    #    if confirm != 'yes':
-    #        return False
+    if not block_record and not force_block:
+        print txt
+        confirm = raw_input("Block %s ? [type 'yes'] " % ip)
+        if confirm != 'yes':
+            return False
 
     block_ip(ip=ip, who='snort', comment=txt, duration=BLOCK_TIME, extend_only=True)
 
     if not block_record:
-        logger.debug("%s re-blocked" % ip)
-    else:
         logger.info("%s blocked: %s" % (ip, txt))
+    else:
+        logger.debug("%s re-blocked" % ip)
     return True
 
 
-def main():
+def main(force_block=False):
     for ip, alerts in do_sigs():
-        block(ip, alerts)
+        block(ip, alerts, force_block)
 if __name__ == "__main__":
-    main()
-
+    from optparse import OptionParser
+    parser = OptionParser()
+    parser.add_option("-f", "--force",  dest="force", action="store_true", help="block without confirmation",default=False)
+    (options, args) = parser.parse_args()
+    main(options.force)

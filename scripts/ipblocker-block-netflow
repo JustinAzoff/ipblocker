@@ -75,8 +75,7 @@ def block(ip, flows, force_block=False):
 
 def main(do_confirm=False):
     for ip, flows in do_ports():
-        #block(ip, flows, force_block)
-        print ip, len(flows)
+        block(ip, flows, force_block)
 
 if __name__ == "__main__":
     from optparse import OptionParser

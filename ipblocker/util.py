@@ -4,7 +4,7 @@ def groupby(it, keyfunc):
     for x in it:
         key = keyfunc(x)
         ret.setdefault(key, []).append(x)
-    return ret
+    return ret.items()
 
 def subnet(ip):
     """1.2.3.4 -> 3"""

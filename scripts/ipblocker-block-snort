@@ -1,6 +1,7 @@
 #!/usr/bin/env python 
 from snort import snortdb
 from ipblocker import block_ip, get_blocked_ip
+from ipblocker import logger
 import os
 from itertools import groupby
 from operator import itemgetter
@@ -17,14 +18,6 @@ MINIMUM = 32
 SUBNET_MINIMUM = 3
 
 BLOCK_TIME = 60*60*24
-
-def group_by_func(it, func):
-    ret = {}
-    for x in it:
-        val = func(x)
-        ret.setdefault(val, []).append(x)
-    return ret
-
 
 def subnet(ip):
     """1.2.3.4 -> 3"""
@@ -61,22 +54,20 @@ def block(ip, alerts):
     ip = str(ip)
     txt = make_txt(alerts)
 
-    print ip
-    print txt
 
     block_record = get_blocked_ip(ip)
 
-    if not block_record:
-        confirm = raw_input("Block %s ? [type 'yes'] " % ip)
-        if confirm != 'yes':
-            return False
+    #if not block_record:
+    #    confirm = raw_input("Block %s ? [type 'yes'] " % ip)
+    #    if confirm != 'yes':
+    #        return False
 
     block_ip(ip=ip, who='snort', comment=txt, duration=BLOCK_TIME, extend_only=True)
 
-    if block_record:
-        print ip, 're-blocked'
+    if not block_record:
+        logger.debug("%s re-blocked" % ip)
     else:
-        print ip, 'blocked'
+        logger.info("%s blocked: %s" % (ip, txt))
     return True
 
 

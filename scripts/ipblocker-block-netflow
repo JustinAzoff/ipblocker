@@ -8,20 +8,16 @@ from operator import itemgetter
 
 import datetime
 
-MINIMUM = 32
-SUBNET_MINIMUM = 20
-
-BLOCK_TIME = 60*60*24
-
 ports = [
     22,
     3389,
     5900,
 ]
 
-def subnet(ip):
-    """1.2.3.4 -> 3"""
-    return (ip.int()/256)&255
+MINIMUM = 384
+SUBNET_MINIMUM = 32
+
+BLOCK_TIME = 60*60*24
 
 def num_subnets(flows):
     by_dst = groupby(flows, lambda a: subnet(a['dst']))
@@ -64,7 +60,7 @@ def block(ip, flows, force_block=False):
         if confirm != 'yes':
             return False
 
-    block_ip(ip=ip, who='snort', comment=txt, duration=BLOCK_TIME, extend_only=True)
+    block_ip(ip=ip, who='netflow', comment=txt, duration=BLOCK_TIME, extend_only=True)
 
     if not block_record:
         logger.info("%s blocked: %s" % (ip, txt))

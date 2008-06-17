@@ -27,6 +27,7 @@ def num_subnets(alerts):
 def do_sigs():
     snort=snortdb.sdb()
     snort.setwhere(range='hour',span=1)
+
     alerts = []
     for sig in sigs:
         for a in snort.find(sig=sig):
@@ -72,6 +73,7 @@ def block(ip, alerts, force_block=False):
 def main(force_block=False):
     for ip, alerts in do_sigs():
         block(ip, alerts, force_block)
+
 if __name__ == "__main__":
     from optparse import OptionParser
     parser = OptionParser()

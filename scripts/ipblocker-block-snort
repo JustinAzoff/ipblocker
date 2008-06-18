@@ -27,6 +27,7 @@ def num_subnets(alerts):
 def do_sigs():
     snort=snortdb.sdb()
     snort.setwhere(range='hour',span=1)
+    snort.limit=None
 
     alerts = []
     for sig in sigs:

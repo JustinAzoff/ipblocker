@@ -8,16 +8,13 @@ from operator import itemgetter
 
 import datetime
 
-ports = [
-    22,
-    3389,
-    5900,
-]
+PORTS = "22 3389 5900"
+FILT="dst port in [%s] and dst net 169.226.0.0/16 and flags S and not flags A" % PORTS
 
 MINIMUM = 384
 SUBNET_MINIMUM = 32
 
-BLOCK_TIME = 60*60*24
+BLOCK_TIME = 60*60*24*7
 
 def num_subnets(flows):
     by_dst = groupby(flows, lambda a: subnet(a['dst']))
@@ -27,10 +24,7 @@ def do_ports():
     d=pynfdump.Dumper('/data/nfsen/profiles/',sources=['podium'],remote_host='root@glenn')
     d.set_where(start=str(datetime.date.today()))
 
-    flows = []
-    for p in ports:
-        for a in d.search("dst port %d and dst net 169.226.0.0/16 and flags S and not flags A" % p, aggregate='srcip,dstip,dstport'):
-            flows.append(a)
+    flows = d.search(FILT, aggregate='srcip,dstip,dstport')
     by_src = groupby(flows, itemgetter("src"))
         
     for ip, flows in by_src:

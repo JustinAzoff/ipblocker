@@ -139,6 +139,10 @@ def get_blocked():
     """Return a list of the currently blocked IPS"""
     return Block.query.filter(and_(Block.blocked!=None,Block.unblocked==None)).all()
 
+def get_ip(ip):
+    """Return all the block records for this ip"""
+    return Block.query.filter(Block.ip==ip).all()
+
 def get_blocked_ip(ip):
     """Return a single Blocked IP, or None if it is not currently blocked
        Pending is considered Blocked, otherwise unblock_now won't work right"""

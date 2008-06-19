@@ -6,6 +6,7 @@ digraph G {
     imn [label="ipblocker-manage-nullroutes"];
     ri  [shape=box label="ren-isac"];
     snort [shape=box];
+    netflow [shape=box];
     users [shape=box];
     ibr [label="ipblocker-block-ren-isac"];
     ibs [label="ipblocker-block-snort"];
@@ -14,8 +15,10 @@ digraph G {
     users -> portal;
     portal -> database;
     snort -> ibs [label=" snort database" arrowtail=crow];
-    ibs -> database;
     ri  -> ibr [label=" web interface" arrowtail=crow] ;
+    netflow -> ibn [arrowtail=crow];
+
+    ibs -> database;
     ibr -> database;
     ibn -> database;
     imn -> database;

@@ -1,0 +1,25 @@
+digraph G {
+    node [fontsize=20];
+    graph [overlap=false];
+    database [shape=box label="ipblocker database"];
+    router [shape=box];
+    imn [label="ipblocker-manage-nullroutes"];
+    ri  [shape=box label="ren-isac"];
+    snort [shape=box];
+    users [shape=box];
+    ibr [label="ipblocker-block-ren-isac"];
+    ibs [label="ipblocker-block-snort"];
+    ibn [label="ipblocker-block-netflow"];
+
+    users -> portal;
+    portal -> database;
+    snort -> ibs [label=" snort database" arrowtail=crow];
+    ibs -> database;
+    ri  -> ibr [label=" web interface" arrowtail=crow] ;
+    ibr -> database;
+    ibn -> database;
+    imn -> database;
+
+    database -> imn;
+    imn -> router;
+}

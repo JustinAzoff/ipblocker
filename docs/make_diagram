@@ -1,0 +1,2 @@
+cat diagram.dot|dot -Tps > diagram.ps
+gs -q -dNOPAUSE -dBATCH -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -sDEVICE=png16m -sOutputFile=diagram.png diagram.ps

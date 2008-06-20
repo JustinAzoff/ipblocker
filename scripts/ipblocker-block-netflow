@@ -8,6 +8,7 @@ from operator import itemgetter
 
 import datetime
 
+#TODO: put in config file
 PORTS = "22 3389 5900"
 FILT="dst port in [%s] and dst net 169.226.0.0/16 and flags S and not flags A" % PORTS
 

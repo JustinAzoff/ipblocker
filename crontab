@@ -1,0 +1,4 @@
+# m h  dom mon dow   command
+* * * * * timeout 200 ipblocker-manage-nullroutes
+0 * * * * sleep 20;timeout 600 ipblocker-block-ren-isac > /dev/null
+* * * * * sleep 45;timeout 100 ipblocker-block-snort > /dev/null

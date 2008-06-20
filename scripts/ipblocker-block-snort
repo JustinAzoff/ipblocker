@@ -8,6 +8,7 @@ from operator import itemgetter
 
 import datetime
 
+#TODO: put in config file
 sigs = [
     'ET SCAN LibSSH Based SSH Connection',
     'ET SCAN Potential SSH Scan',

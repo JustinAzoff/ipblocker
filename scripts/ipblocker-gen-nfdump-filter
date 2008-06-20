@@ -2,23 +2,23 @@
 from ipblocker import model
 import sys
 
-def save(s):
-    if len(sys.argv) > 1:
-        fn = sys.argv[1]
-        f = open(fn, 'w')
-    else:
-        f = sys.stdout
+def save(fn, s):
+    f = open(fn, 'w')
     f.write(s)
+    f.close()
 
-
-def main():
+def main(output_file="/dev/stdout"):
     s = ''
     s += "host in ["
     for b in model.get_all_that_should_be_blocked():
         s+= b.ip + " "
     s += "]\n"
-    save(s)
+    save(output_file, s)
     model.engine.dispose()
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) > 1:
+        fn = sys.argv[1]
+    else:
+        fn = "/dev/stdout"
+    main(fn)

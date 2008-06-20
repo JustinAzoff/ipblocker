@@ -3,8 +3,12 @@
 from ipblocker import model, logger
 from cisco.ciscolib import login
 from ipblocker.config import config
-import mymemcache
 import time
+
+try :
+    import mymemcache
+except ImportError:
+    mymemcache = None
 
 IP = config.get("nullrouter","ip")
 
@@ -96,8 +100,9 @@ def main():
         logger.debug("Logging out of router")
         cisco_connection.logout()
 
-    mc = mymemcache.Client(timeout=60*60)
-    mc['ipblocker:last_manager_runtime'] = time.ctime()
+    if mymemcache:
+        mc = mymemcache.Client(timeout=60*60)
+        mc['ipblocker:last_manager_runtime'] = time.ctime()
     model.engine.dispose()
 
 

@@ -1,5 +1,24 @@
 #!/usr/bin/python
 from ipblocker import model
 
-for b in model.get_all_that_should_be_blocked():
-    print b.ip
+def show_all():
+    for b in model.get_all_that_should_be_blocked():
+        print b.ip
+
+def show_one(ip):
+    b = model.get_blocked_ip(ip)
+    if not b:
+        return
+
+    print 'blocked at', b.blocked, 'by', b.who
+    print 'unblock at', b.unblock_at, b.unblock_at_relative
+
+    print b.comment
+
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) > 1:
+        for ip in sys.argv[1:]:
+            show_one(ip)
+    else:
+        show_all()

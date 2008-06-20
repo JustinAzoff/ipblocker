@@ -13,6 +13,7 @@ postgres$ createuser -S -D -R  -P ipblocker
 postgres$ createdb -O ipblocker ipblocker
 
 ##### create the tables
+##### (TODO:should be paster setup-app)
 $ python
 >>> from ipblocker import model
 >>> model.metadata.create_all()

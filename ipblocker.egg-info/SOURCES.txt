@@ -4,6 +4,7 @@ server.pem
 setup.cfg
 setup.py
 docs/diagram.dot
+docs/diagram.png
 docs/example_session.txt
 docs/make_diagram
 docs/setup.txt

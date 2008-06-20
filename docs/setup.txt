@@ -1,0 +1,26 @@
+##### add a user for the blocker
+
+# adduser --disabled-password ipblocker
+# su - ipblocker
+
+##### make the initial config( can also be in /etc/ipblocker/
+
+$ paster make-config ipblocker ipblocker.cfg
+$ vim ipblocker.cfg #edit database and other passwords
+
+##### create the database and user
+postgres$ createuser -S -D -R  -P ipblocker
+postgres$ createdb -O ipblocker ipblocker
+
+##### create the tables
+$ python
+>>> from ipblocker import model
+>>> model.metadata.create_all()
+
+##### add crontab
+
+# m h  dom mon dow   command
+* * * * * timeout 200 ipblocker-manage-nullroutes
+0 * * * * sleep 20;timeout 600 ipblocker-block-ren-isac > /dev/null
+#* * * * * sleep 45;timeout 100 ipblocker-block-snort > /dev/null
+

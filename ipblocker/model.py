@@ -227,6 +227,19 @@ def unblock_ip(ip):
     else:
         return False
 
+def is_reblockable(ip):
+    """Has this ip been blocked before? if so, was it not last unblocked manually?"""
+    recs = get_ip(ip)
+    if not recs:
+        return False
+    last = recs[-1]
+    #if it was forced to be unblocked, consider the last block a false positive
+    if last.unblock_now:
+        return False
+
+    return True
+
+
 mapper(Block, blocks)
 mapper(DontBlock, dont_block)
 
@@ -237,4 +250,6 @@ __all__ = '''
     Block
     get_blocked get_blocked_ip get_block_pending get_unblock_pending
     get_dont_block_record
-    block_ip unblock_ip'''.split()
+    block_ip unblock_ip
+    is_reblockable
+    '''.split()

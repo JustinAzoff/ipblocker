@@ -38,7 +38,7 @@ def do_sigs():
         
     for ip, alerts in by_src:
         alerts = list(alerts)
-        if is_reblockable(ip) or (len(alerts) >= MINIMUM and num_subnets(alerts) >= SUBNET_MINIMUM):
+        if is_reblockable(str(ip)) or (len(alerts) >= MINIMUM and num_subnets(alerts) >= SUBNET_MINIMUM):
             yield ip, alerts
 
 def make_txt(alerts):

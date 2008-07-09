@@ -45,9 +45,10 @@ def make_txt(alerts):
     txt = "%d alerts (%d subnets)\n" % (len(alerts), num_subnets(alerts))
     for a in alerts[:5]:
         txt += "%(timestamp)s %(ip_src)s:%(sport)s -> %(ip_dst)s:%(dport)s %(sig)s\n" % a
-    txt += "...\n"
-    for a in alerts[-5:]:
-        txt += "%(timestamp)s %(ip_src)s:%(sport)s -> %(ip_dst)s:%(dport)s %(sig)s\n" % a
+    if len(alerts) > 5:
+        txt += "...\n"
+        for a in alerts[-5:]:
+            txt += "%(timestamp)s %(ip_src)s:%(sport)s -> %(ip_dst)s:%(dport)s %(sig)s\n" % a
     return txt
 
 def block(ip, alerts, force_block=False):

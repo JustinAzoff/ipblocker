@@ -67,7 +67,17 @@ dont_block = Table('dont_block', metadata,
     Column('entered',   DateTime, default=datetime.datetime.now),
 )
 
-#and IP can be pending blocked, but then set unblock_now
+fishy = Table('fishy', metadata,
+    Column('ip',        PGInet, index=True, primary_key=True),
+    Column('comment',   String, nullable=False),
+    Column('entered',   DateTime, default=datetime.datetime.now),
+)
+
+class Fishy(object):
+    def __repr__(self):
+        return 'Fishy(ip="%s")' % self.ip
+
+#an IP can be pending blocked, but then set unblock_now
 #at this point, blocked=NULL, unblocked=NULL
 #the manager should try and unblock it(a noop) and then set
 #unblocked=now(), so blocked will still be NULL
@@ -240,8 +250,32 @@ def is_reblockable(ip):
     return True
 
 
+def get_fishy_ip(ip):
+    r = Fishy.query.filter(fishy.c.ip==ip).first()
+    return r
+
+def is_fishy(ip):
+    """Is this IP fishy?"""
+    return bool(get_fishy_ip(ip))
+
+def get_fishy():
+    """List the fishy records"""
+    return Fishy.query.all()
+
+def add_fishy(ip, comment):
+    """Add a fishy IP Record"""
+    f = Fishy()
+    f.ip = ip
+    f.comment = comment
+    Session.flush()
+
+def del_fishy(ip):
+    """Remove a fishy IP record"""
+    fishy.delete(fishy.c.ip==ip).execute().close()
+
 mapper(Block, blocks)
 mapper(DontBlock, dont_block)
+mapper(Fishy, fishy)
 
 #CREATE INDEX idx_blocked_null   ON blocks (blocked)   WHERE blocked IS NULL;
 #CREATE INDEX idx_unblocked_null ON blocks (unblocked) WHERE unblocked IS NOT NULL;
@@ -252,4 +286,5 @@ __all__ = '''
     get_dont_block_record
     block_ip unblock_ip
     is_reblockable
+    get_fishy_ip is_fishy get_fishy add_fishy del_fishy
     '''.split()

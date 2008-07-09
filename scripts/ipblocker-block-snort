@@ -1,6 +1,6 @@
 #!/usr/bin/env python 
 from snort import snortdb
-from ipblocker import block_ip, get_blocked_ip, is_reblockable
+from ipblocker import block_ip, get_blocked_ip, is_reblockable, is_fishy
 from ipblocker import logger
 import os
 from ipblocker.util import groupby, subnet
@@ -38,7 +38,7 @@ def do_sigs():
         
     for ip, alerts in by_src:
         alerts = list(alerts)
-        if is_reblockable(str(ip)) or (len(alerts) >= MINIMUM and num_subnets(alerts) >= SUBNET_MINIMUM):
+        if is_reblockable(str(ip)) or is_fishy(str(ip)) or (len(alerts) >= MINIMUM and num_subnets(alerts) >= SUBNET_MINIMUM):
             yield ip, alerts
 
 def make_txt(alerts):

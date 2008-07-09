@@ -118,3 +118,17 @@ def test_cleanup():
     for x in B.query.filter(B.ip==IP).all():
         model.Session.delete(x)
     model.Session.flush()
+
+
+def test_fishy():
+    assert is_fishy(IP) == False
+
+    add_fishy(IP, 'test')
+    assert is_fishy(IP) == True
+
+    f = get_fishy_ip(IP)
+    assert f.ip == IP
+    assert f.comment == 'test'
+
+    del_fishy(IP)
+    assert is_fishy(IP) == False

@@ -4,6 +4,7 @@ from ipblocker import model, logger
 from cisco.ciscolib import login
 from ipblocker.config import config
 import time
+from ipblocker.notify import notify_block
 
 try :
     import mymemcache
@@ -69,6 +70,7 @@ def block():
         to_block[b.ip] = b
         if b.ip not in current:
             logger.info("blocking %s" % b.ip)
+            notify_block(b)
         else:
             logger.warning("already blocked %s, blocking anyway" % b.ip)
 

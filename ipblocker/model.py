@@ -8,6 +8,7 @@ import ConfigParser
 import datetime
 
 from ipblocker.config import config
+from ipblocker.notify import notify_block
 
 import psycopg2
 import random
@@ -225,6 +226,7 @@ def block_ip(ip, who, comment, duration, extend_only=False):
             b.unblock_at = unblock_at
     else:
         b = Block(ip=ip, who=who, comment=comment, unblock_at=unblock_at)
+        notify_block(b)
     Session.flush()
     return b
 

@@ -6,6 +6,6 @@ def notify_block(b):
     try :
         if e is None:
             e=Events('notify')
-        e.add_event("ipb: %s\n%s" % ( b.ip, b.comment))
+        e.add_event("ipb: %s - %s" % ( b.ip, b.who))
     except:
         pass

@@ -15,6 +15,7 @@ sigs = [
     'VNC Scan 5900-5920',
     'ET SCAN MYSQL 4.1 brute force root login attempt', 
     'ET SCAN Behavioral Unusually fast Terminal Server Traffic, Potential Scan or Infection',
+    'ET SCAN Tomcat Auth Brute Force attempt',
 ]
 MINIMUM = 32
 SUBNET_MINIMUM = 3

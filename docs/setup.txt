@@ -1,3 +1,14 @@
+#install everything
+root# easy_install cisco*gz ren_isac*gz ipblocker*gz
+
+#setup cisco lib
+$ mkdir ~/.cisco
+$ touch ~/.cisco/credentials
+$ chmod 600 ~/.cisco/credentials
+$ edit ~/.cisco/credentials
+#add tab deliminated
+username        password        enablepassword
+
 ##### add a user for the blocker
 
 # adduser --disabled-password ipblocker
@@ -6,6 +17,7 @@
 ##### make the initial config( can also be in /etc/ipblocker/
 
 $ paster make-config ipblocker ipblocker.cfg
+$ chmod 600 ipblocker.cfg
 $ vim ipblocker.cfg #edit database and other passwords
 
 ##### create the database and user

@@ -220,7 +220,7 @@ def block_ip(ip, who, comment, duration, extend_only=False):
     b = get_blocked_ip(ip)
     if b:
         b.who = who
-        b.comment = comment
+        b.comment += "\n" + comment
         if not ( extend_only and b.unblock_delta > diff ):
             b.unblock_at = unblock_at
     else:

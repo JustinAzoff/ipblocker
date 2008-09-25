@@ -41,7 +41,7 @@ def unblock():
         if b.ip not in current:
             logger.warning("already unblocked %s, unblocking anyway" % b.ip)
         else:
-            logger.info("unblocking %s" % b.ip)
+            logger.info("unblocking %s (%s)" % (b.ip, b.who))
 
     if not to_unblock:
         return
@@ -69,7 +69,7 @@ def block():
     for b in block_pending:
         to_block[b.ip] = b
         if b.ip not in current:
-            logger.info("blocking %s" % b.ip)
+            logger.info("blocking %s (%s)" % (b.ip, b.who))
             notify_block(b)
         else:
             logger.warning("already blocked %s, blocking anyway" % b.ip)

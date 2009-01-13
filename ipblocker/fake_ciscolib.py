@@ -4,16 +4,17 @@ def login(ip):
 
 class FakeCisco:
     def __init__(self, ip):
+        self.ip = ip
         self.load()
     def load(self):
         ips = []
         try :
-            ips = open("/tmp/nullroutes").read().split()
+            ips = open("/tmp/nullroutes_" + self.ip).read().split()
         except:
             pass
         self._nullroutes = ips
     def save(self):
-        f=open("/tmp/nullroutes",'w')
+        f=open("/tmp/nullroutes_" + self.ip,'w')
         for ip in self._nullroutes:
             f.write("%s\n" % ip)
         f.close()

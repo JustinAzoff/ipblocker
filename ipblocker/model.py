@@ -75,7 +75,7 @@ fishy = Table('fishy', metadata,
 
 class Fishy(object):
     def __repr__(self):
-        return 'Fishy(ip="%s")' % self.ip
+        return 'Fishy(ip="%s",comment="%s")' % (self.ip, self.comment)
 
 #an IP can be pending blocked, but then set unblock_now
 #at this point, blocked=NULL, unblocked=NULL

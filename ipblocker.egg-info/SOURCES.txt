@@ -1,6 +1,5 @@
 crontab
 ipblocker.cfg
-server.pem
 setup.cfg
 setup.py
 docs/diagram.dot
@@ -13,6 +12,8 @@ ipblocker/config.py
 ipblocker/fake_ciscolib.py
 ipblocker/logger.py
 ipblocker/model.py
+ipblocker/notify.py
+ipblocker/nullroute_manager.py
 ipblocker/util.py
 ipblocker.egg-info/PKG-INFO
 ipblocker.egg-info/SOURCES.txt

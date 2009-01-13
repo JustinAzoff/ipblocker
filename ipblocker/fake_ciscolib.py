@@ -24,7 +24,8 @@ class FakeCisco:
 
     def nullroute_remove_many(self, ips):
         for ip in ips:
-            self._nullroutes.remove(ip)
+            if ip in self._nullroutes:
+                self._nullroutes.remove(ip)
         self.save()
         
     def nullroute_add_many(self, ips):
@@ -40,6 +41,8 @@ class FakeCisco:
     def nullroute_add(self, ip):
         return self.nullroute_add_([ip])
 
+    def write_mem(self):
+        return ["Write mem"]
 
     def logout(self):
         pass

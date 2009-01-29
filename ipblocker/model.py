@@ -28,7 +28,11 @@ Session = scoped_session(sessionmaker(autoflush=True, transactional=False, bind=
 metadata = MetaData(bind=engine)
 mapper = Session.mapper
 
-from webhelpers import distance_of_time_in_words
+try :
+    from webhelpers import distance_of_time_in_words
+except ImportError:
+    from webhelpers.date import distance_of_time_in_words
+
 
 class PGMac(sqltypes.TypeEngine):
     def get_col_spec(self):

@@ -1,13 +1,13 @@
 #!/usr/bin/python
 
-from ipblocker import logger
+from ipblocker import logger, config
 import time
 from ipblocker.notify import notify_block
 
 try :
-    import mymemcache
+    import memcache
 except ImportError:
-    mymemcache = None
+    memcache = None
 
 class Manager:
     def __init__(self, ip, model_class, cisco_class):
@@ -104,7 +104,8 @@ class Manager:
             logger.debug("Logging out of router")
             self.connection.logout()
 
-        if mymemcache:
-            mc = mymemcache.Client(timeout=60*60)
-            mc['ipblocker:last_manager_runtime'] = time.ctime()
+        host = config.get("blocking","memcache_host")
+        if memcache and host:
+            mc = memcache.Client([host])
+            mc.set("ipblocker:last_manager_runtime", time.ctime())
         self.model.engine.dispose()

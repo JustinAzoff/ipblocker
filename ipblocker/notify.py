@@ -1,6 +1,6 @@
 try :
     from amqpevent import Events
-except ImportError
+except ImportError:
     Events = None
 
 e = None

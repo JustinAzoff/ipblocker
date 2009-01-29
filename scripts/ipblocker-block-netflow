@@ -3,17 +3,13 @@ import pynfdump
 from ipblocker import block_ip, get_blocked_ip, is_reblockable, is_fishy
 from ipblocker import logger
 from ipblocker import is_country_ok
-from ipblocker import util
+from ipblocker import util, config
 
 from operator import itemgetter
 import datetime
 import os
 
-#TODO: put in config file
-PORTS = "22 25 3389 5900 5901"
-FILT="dst port in [%s] and dst net 169.226.0.0/16 and flags S and not flags A" % PORTS
-
-MINIMUM = 128
+TOTAL_MINIMUM = 128
 BAD_COUNTRY_SUBNET_MINIMUM = 1
 OK_COUNTRY_SUBNET_MINIMUM = 3
 
@@ -29,7 +25,6 @@ def num_subnets(flows):
     return len(list(by_dst))
 
 def should_block(ip):
-    ip = str(ip)
     if is_reblockable(ip):
         return True
     if is_fishy(ip):
@@ -37,21 +32,30 @@ def should_block(ip):
     return False
 
 def do_ports():
-    d=pynfdump.Dumper('/data/nfsen/profiles/',sources=['podium'],remote_host='root@glenn')
+    filt = config.get("netflow", "filter")
+    netflow_dir = config.get("netflow", "dir")
+    sources     = config.get("netflow", "sources").split(",")
+    remote_host = config.get("netflow", "remote_host")
+
+    d=pynfdump.Dumper(netflow_dir, sources=sources, remote_host=remote_host)
     d.set_where(start=str(datetime.date.today()))
 
-    flows = d.search(FILT, aggregate='srcip,dstip,dstport')
+    flows = d.search(filt, aggregate='srcip,dstip,dstport')
     by_src = util.groupby(flows, itemgetter("src"))
-    countries = util.lookup_countries(str(ip) for ip,flows in by_src if len(flows) >= MINIMUM)
+    countries = util.lookup_countries(str(ip) for ip,flows in by_src if len(flows) >= TOTAL_MINIMUM)
 
     for ip, flows in by_src:
-        if len(flows) < MINIMUM:
-            continue
         ip = str(ip)
-        country_ok = is_country_ok(countries.get(ip).cc)
-        minimum = country_ok_min_mapping[country_ok]
-        if should_block(ip) or num_subnets(flows) >= minimum:
+        if should_block(ip):
             yield ip, flows
+        else:
+            if len(flows) < TOTAL_MINIMUM:
+                continue
+            rec = countries.get(ip)
+            country_ok = is_country_ok(rec and rec.cc or None)
+            minimum = country_ok_min_mapping[country_ok]
+            if num_subnets(flows) >= minimum:
+                yield ip, flows
 
 def make_txt(flows):
     txt = "%d flows (%d subnets)\n" % (len(flows), num_subnets(flows))
@@ -65,7 +69,6 @@ def make_txt(flows):
 def block(ip, flows, force_block=False):
     ip = str(ip)
     txt = make_txt(flows)
-
 
     block_record = get_blocked_ip(ip)
 

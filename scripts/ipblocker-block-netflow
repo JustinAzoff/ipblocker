@@ -41,34 +41,34 @@ def do_ports():
     d.set_where(start=str(datetime.date.today()))
 
     flows = d.search(filt, aggregate='srcip,dstip,dstport')
-    by_src = util.groupby(flows, itemgetter("src"))
+    by_src = util.groupby(flows, itemgetter("srcip"))
     countries = util.lookup_countries(str(ip) for ip,flows in by_src if len(flows) >= TOTAL_MINIMUM)
 
     for ip, flows in by_src:
+        rec = countries.get(ip)
         ip = str(ip)
         if should_block(ip):
-            yield ip, flows
+            yield ip, flows, rec
         else:
             if len(flows) < TOTAL_MINIMUM:
                 continue
-            rec = countries.get(ip)
             country_ok = is_country_ok(rec and rec.cc or None)
             minimum = country_ok_min_mapping[country_ok]
             if num_subnets(flows) >= minimum:
-                yield ip, flows
+                yield ip, flows, rec
 
-def make_txt(flows):
-    txt = "%d flows (%d subnets)\n" % (len(flows), num_subnets(flows))
+def make_txt(flows, rec):
+    txt = "%d flows (%d subnets) from %s\n" % (len(flows), num_subnets(flows), rec and rec.cc)
     for a in flows[:5]:
-        txt += "%(last)s %(src)s:%(srcport)s -> %(dst)s:%(dstport)s\n" % a
+        txt += "%(last)s %(srcip)s:%(srcport)s -> %(dstip)s:%(dstport)s\n" % a
     txt += "...\n"
     for a in flows[-5:]:
-        txt += "%(last)s %(src)s:%(srcport)s -> %(dst)s:%(dstport)s\n" % a
+        txt += "%(last)s %(srcip)s:%(srcport)s -> %(dstip)s:%(dstport)s\n" % a
     return txt
 
-def block(ip, flows, force_block=False):
+def block(ip, flows, rec, force_block=False):
     ip = str(ip)
-    txt = make_txt(flows)
+    txt = make_txt(flows, rec)
 
     block_record = get_blocked_ip(ip)
 
@@ -88,8 +88,8 @@ def block(ip, flows, force_block=False):
 
 
 def main(force_block=False):
-    for ip, flows in do_ports():
-        block(ip, flows, force_block)
+    for ip, flows, rec in do_ports():
+        block(ip, flows, rec, force_block)
 
 if __name__ == "__main__":
     from optparse import OptionParser

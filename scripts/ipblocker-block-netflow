@@ -21,7 +21,7 @@ country_ok_min_mapping = {
 BLOCK_TIME = 60*60*24*7
 
 def num_subnets(flows):
-    by_dst = util.groupby(flows, lambda a: util.subnet(a['dst']))
+    by_dst = util.groupby(flows, lambda a: util.subnet(a['dstip']))
     return len(list(by_dst))
 
 def should_block(ip):

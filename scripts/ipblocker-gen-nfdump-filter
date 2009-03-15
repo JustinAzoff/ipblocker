@@ -1,13 +1,17 @@
 #!/usr/bin/python
 from ipblocker import model
 import sys
+import os
 
 def save(fn, s):
-    f = open(fn, 'w')
+    nfn = fn + '.new'
+    f = open(nfn, 'w')
     f.write(s)
+    os.fsync(f.fileno())
     f.close()
+    os.rename(nfn, fn)
 
-def main(output_file="/dev/stdout"):
+def main(output_file):
     s = ''
     s += "host in ["
     for b in model.get_all_that_should_be_blocked():
@@ -17,8 +21,5 @@ def main(output_file="/dev/stdout"):
     model.engine.dispose()
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        fn = sys.argv[1]
-    else:
-        fn = "/dev/stdout"
+    fn = sys.argv[1]
     main(fn)

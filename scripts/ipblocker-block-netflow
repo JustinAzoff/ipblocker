@@ -45,8 +45,8 @@ def do_ports():
     countries = util.lookup_countries(str(ip) for ip,flows in by_src if len(flows) >= TOTAL_MINIMUM)
 
     for ip, flows in by_src:
-        rec = countries.get(ip)
         ip = str(ip)
+        rec = countries.get(ip)
         if should_block(ip):
             yield ip, flows, rec
         else:

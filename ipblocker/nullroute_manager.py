@@ -2,7 +2,7 @@
 
 from ipblocker import logger, config
 import time
-#from ipblocker.notify import notify_block
+from ipblocker.notify import notify_block
 
 try :
     import memcache
@@ -71,7 +71,7 @@ class Manager:
             to_block[b.ip] = b
             if b.ip not in current:
                 logger.info("blocking %s (%s)" % (b.ip, b.who))
-                #notify_block(b)
+                notify_block(b)
             else:
                 logger.warning("already blocked %s, blocking anyway" % b.ip)
 

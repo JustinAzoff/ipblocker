@@ -1,18 +1,15 @@
 try :
-    from amqpevent import Events
+    from kestrel import Client
 except ImportError:
-    Events = None
-
-e = None
+    Client = None
 
 def notify_block(b):
-    if not Events:
+    if not Client:
         return
 
-    global e
     try :
-        if e is None:
-            e=Events('notify')
-        e.add_event("ipb: %s - %s" % ( b.ip, b.who))
+        c=Client(['test:22133','localhost:22133'])
+        c.set("notify", "ipb: %s - %s" % ( b.ip, b.who))
+        c.disconnect_all()
     except:
         pass

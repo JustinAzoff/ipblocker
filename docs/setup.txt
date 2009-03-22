@@ -1,24 +1,37 @@
 #install everything
-root# easy_install cisco*gz ren_isac*gz ipblocker*gz
-
-#setup cisco lib
-$ mkdir ~/.cisco
-$ touch ~/.cisco/credentials
-$ chmod 600 ~/.cisco/credentials
-$ edit ~/.cisco/credentials
-#add tab deliminated
-username        password        enablepassword
+root# apt-get install python-setuptools python-psycopg2 python-simplejson postgresql-8.3
+root# easy_install cisco*gz cymruwhois*gz ieeemac*gz\
+            pynfdump*gz snort*gz ren_isac*gz ipblocker*gz PasteScript python-memcached
 
 ##### add a user for the blocker
 
-# adduser --disabled-password ipblocker
-# su - ipblocker
+root# adduser --disabled-password ipblocker
+root# su - ipblocker
+
+
+#setup cisco lib
+ipblocker$ mkdir ~/.cisco
+ipblocker$ touch ~/.cisco/credentials
+ipblocker$ chmod 600 ~/.cisco/credentials
+ipblocker$ edit ~/.cisco/credentials
+#add tab deliminated
+username        password        enablepassword
+
+#test ciscolib
+ipblocker$ python
+>>> from cisco.ciscolib import login
+>>> c = login("router_ip")
+>>> c is not None
+True
+>>> print c.nullroute_list()
+[list of current nullrouted IPS]
+
 
 ##### make the initial config( can also be in /etc/ipblocker/
 
-$ paster make-config ipblocker ipblocker.cfg
-$ chmod 600 ipblocker.cfg
-$ vim ipblocker.cfg #edit database and other passwords
+ipblocker$ cp docs/example.cfg ~/ipblocker.cfg
+ipblocker$ chmod 600 ipblocker.cfg
+ipblocker$ vim ipblocker.cfg #edit database and other passwords
 
 ##### create the database and user
 postgres$ createuser -S -D -R  -P ipblocker
@@ -26,9 +39,31 @@ postgres$ createdb -O ipblocker ipblocker
 
 ##### create the tables
 ##### (TODO:should be paster setup-app)
-$ python
+ipblocker$ python
 >>> from ipblocker import model
 >>> model.metadata.create_all()
+
+#test db
+ipblocker$ ipblocker-list-blocked
+[no output expected]
+
+#block ren-isac list
+ipblocker$ ipblocker-block-ren-isac 
+2009-01-29 14:38:00,368 - ipblocker - DEBUG - Fetching IP list from ren-isac
+2009-01-29 14:38:01,402 - ipblocker - DEBUG - Got 453 ips
+2009-01-29 14:38:01,435 - ipblocker - DEBUG - DB-blocking 38.103.173.90
+2009-01-29 14:38:01,447 - ipblocker - DEBUG - DB-blocking 65.217.52.208
+...
+#implement first blocks
+ipblocker$ ipblocker-manage-nullroutes
+2009-01-29 14:41:21,940 - ipblocker - DEBUG - Logging into router
+2009-01-29 14:41:22,172 - ipblocker - DEBUG - Done logging into router
+2009-01-29 14:41:22,230 - ipblocker - INFO - blocking 38.103.173.90 (ren-isac)
+2009-01-29 14:41:22,230 - ipblocker - INFO - blocking 65.217.52.208 (ren-isac)
+...
+2009-01-29 14:42:00,187 - ipblocker - DEBUG - Logging out of router
+
+
 
 ##### add crontab
 

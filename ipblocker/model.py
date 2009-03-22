@@ -1,4 +1,16 @@
-"""IPBlocker database model"""
+"""
+IPBlocker database model
+========================
+
+The main entry points in this module are the
+:func:`block_ip` and
+:func:`unblock_ip`
+methods for adding and removing blocks, and the
+:func:`get_blocked` and
+:func:`get_blocked_ip`
+methods for inspecting the database.
+
+"""
 
 from sqlalchemy import *
 from sqlalchemy.orm import *
@@ -237,7 +249,20 @@ def ok_to_block(ip):
 
 
 def block_ip(ip, who, comment, duration, extend_only=False):
-    """Block this IP address"""
+    """Block this IP address
+    
+    :param ip: IP Address to block
+    :param who: User or system adding the block
+    :param comment: Arbitrary text comment about the block
+    :param duration: duration of the block in seconds
+    :param extend_only: When re-blocking an already blocked host, if extend_only=True the
+                        block time will not be replaced by an earlier time.
+                        The extend_only option is used by the automated blockers
+                        to ensure that they do not decrease a block duration.
+    :rtype: The Block record
+
+
+    """
 
     ex = get_dont_block_record(ip)
     if ex:
@@ -260,7 +285,10 @@ def block_ip(ip, who, comment, duration, extend_only=False):
     return b
 
 def unblock_ip(ip):
-    """Un-block this IP address"""
+    """Un-block this IP address
+
+    :param ip: IP Address to un-block
+    """
     b = get_blocked_ip(ip)
     if b:
         b.set_unblock_now()

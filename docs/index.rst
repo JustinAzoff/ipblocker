@@ -9,7 +9,12 @@ Welcome to IPBlocker's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 2
+
+    overview
+    example_session
+    model
+
 
 Indices and tables
 ==================

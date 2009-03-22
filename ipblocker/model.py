@@ -1,3 +1,5 @@
+"""IPBlocker database model"""
+
 from sqlalchemy import *
 from sqlalchemy.orm import *
 from sqlalchemy.exceptions import SQLError
@@ -81,16 +83,20 @@ class Fishy(object):
     def __repr__(self):
         return 'Fishy(ip="%s",comment="%s")' % (self.ip, self.comment)
 
-#an IP can be pending blocked, but then set unblock_now
-#at this point, blocked=NULL, unblocked=NULL
-#the manager should try and unblock it(a noop) and then set
-#unblocked=now(), so blocked will still be NULL
 class Block(object):
+    """This class represents an individual blocked host"""
     def __repr__(self):
         return 'Block(ip="%s")' % self.ip
 
     def set_blocked(self):
-        """Set this IP from pending block -> blocked"""
+        """Set this IP from pending block -> blocked
+        
+        >>> b.blocked is None
+        True
+        >>> b.set_blocked()
+        >>> b.blocked is None
+        False
+        """
         if self.blocked:
             raise Exception("%s Already blocked!" % self.ip)
         if self.unblocked:
@@ -99,40 +105,60 @@ class Block(object):
         Session.flush()
 
     def set_unblocked(self):
-        """Set this IP from blocked -> unblocked"""
+        """Set this IP from blocked -> unblocked
+        
+        >>> b.blocked is None
+        False
+        >>> b.set_unblocked()
+        >>> b.blocked is None
+        True
+        >>> b.unblocked is None
+        False
+        """
         if self.unblocked: 
             raise Exception("%s Already unblocked!" % self.ip)
+        #an IP can be pending blocked, but then set unblock_now
+        #at this point, blocked=NULL, unblocked=NULL
+        #the manager should try and unblock it(a noop) and then set
+        #unblocked=now(), so blocked will still be NULL
         #if not self.blocked:
         #    raise Exception("%s not blocked yet!!" % self.ip)
         self.unblocked = datetime.datetime.now()
         Session.flush()
 
     def set_unblock_now(self):
-        """Set this IP to be unblocked"""
+        """Set this IP to be unblocked
+        
+        >>> b.unblock_now
+        False
+        >>> b.set_unblock_now()
+        >>> b.unblock_now
+        True
+        """
         self.unblock_now = True
         Session.flush()
 
     def _get_unblock_at_relative(self):
         now = datetime.datetime.now()
-        diff = self.unblock_at - now
         ago = ''
         if now > self.unblock_at:
             ago=' ago'
         return distance_of_time_in_words(now, self.unblock_at) + ago
-    unblock_at_relative = property(_get_unblock_at_relative)
+    unblock_at_relative = property(_get_unblock_at_relative,doc="A textual representation of when this host will be unblocked")
 
     def _get_unblock_delta(self):
         now = datetime.datetime.now()
         diff = self.unblock_at - now
         return diff
-    unblock_delta = property(_get_unblock_delta)
+    unblock_delta = property(_get_unblock_delta, doc="Return a datetime.timedelta object of the time until this host will be unblocked")
 
     def _get_unblock_pending(self):
         now = datetime.datetime.now()
         return  now > self.unblock_at
-    unblock_pending = property(_get_unblock_pending)
+    unblock_pending = property(_get_unblock_pending, doc="Return a True if this host should be unblocked")
 
 class DontBlock(object):
+    """This class represents a host or network that should never be blocked"""
     def __repr__(self):
         return 'DontBlock(ip="%s")' % self.ip
 
@@ -256,6 +282,7 @@ def is_reblockable(ip):
 
 
 def get_fishy_ip(ip):
+    """Return a fishy record for this ip if one exists, otherwise return None"""
     r = Fishy.query.filter(fishy.c.ip==ip).first()
     return r
 

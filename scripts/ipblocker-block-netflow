@@ -9,9 +9,10 @@ from operator import itemgetter
 import datetime
 import os
 
-TOTAL_MINIMUM = 128
+ABSOLUTE_MINIMUM = 128
 BAD_COUNTRY_SUBNET_MINIMUM = 1
 OK_COUNTRY_SUBNET_MINIMUM = 3
+SUBNET_MINIMUM = max(BAD_COUNTRY_SUBNET_MINIMUM, OK_COUNTRY_SUBNET_MINIMUM)
 
 country_ok_min_mapping = {
     True: OK_COUNTRY_SUBNET_MINIMUM,
@@ -19,10 +20,6 @@ country_ok_min_mapping = {
 }
 
 BLOCK_TIME = 60*60*24*7
-
-def num_subnets(flows):
-    by_dst = util.groupby(flows, lambda a: util.subnet(a['dstip']))
-    return len(list(by_dst))
 
 def should_block(ip):
     if is_reblockable(ip):
@@ -41,34 +38,35 @@ def do_ports():
     d.set_where(start=str(datetime.date.today()))
 
     flows = d.search(filt, aggregate='srcip,dstip,dstport')
-    by_src = util.groupby(flows, itemgetter("srcip"))
-    countries = util.lookup_countries(str(ip) for ip,flows in by_src if len(flows) >= TOTAL_MINIMUM)
+    grouped = util.ip_summary(flows)
+    countries = util.lookup_countries(str(ip) for ip, data in grouped.iteritems() if data['num_flows'] >= ABSOLUTE_MINIMUM)
 
-    for ip, flows in by_src:
+    for ip, data in grouped.iteritems():
+        if data['num_flows'] < ABSOLUTE_MINIMUM:
+            continue
         ip = str(ip)
         rec = countries.get(ip)
-        if should_block(ip):
-            yield ip, flows, rec
-        else:
-            if len(flows) < TOTAL_MINIMUM:
-                continue
-            country_ok = is_country_ok(rec and rec.cc or None)
-            minimum = country_ok_min_mapping[country_ok]
-            if num_subnets(flows) >= minimum:
-                yield ip, flows, rec
 
-def make_txt(flows, rec):
-    txt = "%d flows (%d subnets) from %s\n" % (len(flows), num_subnets(flows), rec and rec.cc)
-    for a in flows[:5]:
+        country_ok = is_country_ok(rec and rec.cc or None)
+        minimum = country_ok_min_mapping[country_ok]
+
+        if data['num_subnets'] >= minimum:
+            yield ip, data, rec
+        elif should_block(ip):
+            yield ip, data, rec
+
+def make_txt(data, rec):
+    txt = "%d flows (%d subnets) from %s\n" % (data['num_flows'], data['num_subnets'], rec and rec.cc)
+    for a in data['start_flows']:
         txt += "%(last)s %(srcip)s:%(srcport)s -> %(dstip)s:%(dstport)s\n" % a
     txt += "...\n"
-    for a in flows[-5:]:
+    for a in data['stop_flows']:
         txt += "%(last)s %(srcip)s:%(srcport)s -> %(dstip)s:%(dstport)s\n" % a
     return txt
 
-def block(ip, flows, rec, force_block=False):
+def block(ip, data, rec, force_block=False):
     ip = str(ip)
-    txt = make_txt(flows, rec)
+    txt = make_txt(data, rec)
 
     block_record = get_blocked_ip(ip)
 
@@ -88,8 +86,8 @@ def block(ip, flows, rec, force_block=False):
 
 
 def main(force_block=False):
-    for ip, flows, rec in do_ports():
-        block(ip, flows, rec, force_block)
+    for ip, data, rec in do_ports():
+        block(ip, data, rec, force_block)
 
 if __name__ == "__main__":
     from optparse import OptionParser

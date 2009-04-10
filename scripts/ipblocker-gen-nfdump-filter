@@ -11,15 +11,22 @@ def save(fn, s):
     f.close()
     os.rename(nfn, fn)
 
-def main(output_file):
+def main(output_file, flagged=False):
     s = ''
     s += "host in ["
     for b in model.get_all_that_should_be_blocked():
-        s+= b.ip + " "
+        if flagged == False or b.flag_traffic:
+            s += b.ip + " "
     s += "]\n"
     save(output_file, s)
     model.engine.dispose()
 
 if __name__ == "__main__":
-    fn = sys.argv[1]
-    main(fn)
+    from optparse import OptionParser
+    parser = OptionParser()
+    parser.add_option("-f", "--flagged",  dest="flagged", action="store_true",
+        help="create a filter for only the 'flagged' ips",default=False)
+    (options, args) = parser.parse_args()
+
+    fn = args[0]
+    main(fn, options.flagged)

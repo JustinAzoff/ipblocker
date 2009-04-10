@@ -74,7 +74,8 @@ blocks = Table('blocks', metadata,
     Column('blocked',   DateTime, index=True),
     Column('unblocked', DateTime, index=True),
     Column('unblock_at', DateTime, nullable=False),
-    Column('unblock_now',   Boolean, default=False,nullable=False)
+    Column('unblock_now',   Boolean, default=False,nullable=False),
+    Column('flag_traffic',  Boolean, default=False,nullable=False),
 )
 
 dont_block = Table('dont_block', metadata,
@@ -248,7 +249,7 @@ def ok_to_block(ip):
     return not r
 
 
-def block_ip(ip, who, comment, duration, extend_only=False):
+def block_ip(ip, who, comment, duration, flag_traffic=False, extend_only=False):
     """Block this IP address
     
     :param ip: IP Address to block
@@ -280,7 +281,7 @@ def block_ip(ip, who, comment, duration, extend_only=False):
         if not ( extend_only and b.unblock_delta > diff ):
             b.unblock_at = unblock_at
     else:
-        b = Block(ip=ip, who=who, comment=comment, unblock_at=unblock_at)
+        b = Block(ip=ip, who=who, comment=comment, unblock_at=unblock_at, flag_traffic=flag_traffic)
     Session.flush()
     return b
 

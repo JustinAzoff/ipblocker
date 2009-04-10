@@ -1,9 +1,12 @@
 #!/usr/bin/python
 from ipblocker import model
 
-def show_all():
+def show_all(verbose=False):
     for b in model.get_all_that_should_be_blocked():
-        print b.ip
+        if verbose:
+            print b.ip, b.who, b.blocked, repr(b.comment)[:20]
+        else:
+            print b.ip
 
 def show_one(ip):
     b = model.get_blocked_ip(ip)
@@ -16,9 +19,13 @@ def show_one(ip):
     print b.comment
 
 if __name__ == "__main__":
-    import sys
-    if len(sys.argv) > 1:
-        for ip in sys.argv[1:]:
+    from optparse import OptionParser
+    parser = OptionParser()
+    parser.add_option("-v", "--verbose",  dest="verbose", action="store_true",
+        help="show detailed block information",default=False)
+    (options, args) = parser.parse_args()
+    if args:
+        for ip in args:
             show_one(ip)
     else:
-        show_all()
+        show_all(options.verbose)

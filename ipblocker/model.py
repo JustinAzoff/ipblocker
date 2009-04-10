@@ -256,6 +256,7 @@ def block_ip(ip, who, comment, duration, flag_traffic=False, extend_only=False):
     :param who: User or system adding the block
     :param comment: Arbitrary text comment about the block
     :param duration: duration of the block in seconds
+    :param flag_traffic: Should any traffic to this IP be flagged for review?
     :param extend_only: When re-blocking an already blocked host, if extend_only=True the
                         block time will not be replaced by an earlier time.
                         The extend_only option is used by the automated blockers

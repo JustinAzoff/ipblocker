@@ -176,11 +176,11 @@ class DontBlock(object):
         return 'DontBlock(ip="%s")' % self.ip
 
 def get_all():
-    """Return a list of all the blocked and pending IPS"""
+    """Return a list of all the blocked and pending IPs"""
     return Block.query.filter(Block.unblocked==None).all()
 
 def get_all_that_should_be_blocked():
-    """Return a list of all the blocked and pending IPS"""
+    """Return a list of all the blocked and pending IPs"""
     return Block.query.filter(and_(
             Block.unblocked==None,            #hasn't been unblocked yet
             Block.unblock_now == False,       #it isn't forced unblocked
@@ -189,7 +189,7 @@ def get_all_that_should_be_blocked():
             )).all()
 
 def get_blocked():
-    """Return a list of the currently blocked IPS"""
+    """Return a list of the currently blocked IPs"""
     return Block.query.filter(and_(Block.blocked!=None,Block.unblocked==None)).all()
 
 def get_ip(ip):
@@ -202,7 +202,7 @@ def get_blocked_ip(ip):
     return Block.query.filter(and_(Block.unblocked==None,Block.ip==ip)).first()
 
 def get_block_pending():
-    """Return a list of the IPS that are pending being blocked
+    """Return a list of the IPs that are pending being blocked
        Also checks the dont_block table for any addresses that were set to be not blocked
        after an address was blocked
     """
@@ -214,7 +214,7 @@ def get_block_pending():
         )).all()
 
 def get_unblock_pending():
-    """Return a list of the IPS that are pending being un-blocked
+    """Return a list of the IPs that are pending being un-blocked
        Also checks the dont_block table for any addresses that were set to be not blocked
        after an address was blocked
     """
@@ -250,7 +250,7 @@ def ok_to_block(ip):
 
 
 def block_ip(ip, who, comment, duration, flag_traffic=False, extend_only=False):
-    """Block this IP address
+    """Block an IP address
     
     :param ip: IP Address to block
     :param who: User or system adding the block
@@ -351,3 +351,12 @@ __all__ = '''
     is_reblockable
     get_fishy_ip is_fishy get_fishy add_fishy del_fishy
     '''.split()
+
+__all__ = '''
+    Block
+    get_all get_all_that_should_be_blocked get_blocked get_ip
+    get_blocked_ip get_block_pending get_unblock_pending list_dont_block_records
+    add_dont_block_record get_dont_block_record delete_dont_block_record
+    ok_to_block block_ip unblock_ip is_reblockable
+    get_fishy_ip is_fishy get_fishy add_fishy del_fishy'''.split()
+

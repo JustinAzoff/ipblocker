@@ -26,12 +26,16 @@ def main(output_file, flagged=False, dest_only=False):
 
 if __name__ == "__main__":
     from optparse import OptionParser
-    parser = OptionParser()
+    parser = OptionParser(usage="usage: %prog [options] /path/to/filter.txt")
     parser.add_option("-f", "--flagged",  dest="flagged", action="store_true",
         help="create a filter for only the 'flagged' ips",default=False)
     parser.add_option("-d", "--dest_only",  dest="dest_only", action="store_true",
         help="restrict the filter to only match outbound traffic to a blocked IP",default=False)
     (options, args) = parser.parse_args()
+
+    if len(args) != 1:
+        parser.print_help()
+        sys.exit(1)
 
     fn = args[0]
     main(fn, options.flagged, options.dest_only)

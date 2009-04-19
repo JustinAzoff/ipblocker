@@ -13,6 +13,7 @@ Contents:
 
     overview
     example_session
+    setup
     model
 
 

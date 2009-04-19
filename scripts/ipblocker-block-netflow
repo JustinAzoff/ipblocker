@@ -5,9 +5,7 @@ from ipblocker import logger
 from ipblocker import is_country_ok
 from ipblocker import util, config
 
-from operator import itemgetter
 import datetime
-import os
 
 ABSOLUTE_MINIMUM = 128
 BAD_COUNTRY_SUBNET_MINIMUM = 1

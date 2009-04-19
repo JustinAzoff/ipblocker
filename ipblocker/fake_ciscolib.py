@@ -39,7 +39,7 @@ class FakeCisco:
         return self.nullroute_remove_many([ip])
 
     def nullroute_add(self, ip):
-        return self.nullroute_add_([ip])
+        return self.nullroute_add_many([ip])
 
     def write_mem(self):
         return ["Write mem"]

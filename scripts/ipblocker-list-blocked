@@ -4,7 +4,7 @@ from ipblocker import model
 def show_all(verbose=False):
     for b in model.get_all_that_should_be_blocked():
         if verbose:
-            print b.ip, b.who, b.blocked.strftime("%Y-%m-%d"), repr(b.comment)[:40]
+            print b.ip, b.who, b.blocked and b.blocked.strftime("%Y-%m-%d"), repr(b.comment)[:60]
         else:
             print b.ip
 

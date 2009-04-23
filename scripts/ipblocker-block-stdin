@@ -1,0 +1,40 @@
+#!/usr/bin/env python 
+import os, sys
+from ipblocker import block_ip, get_blocked_ip, is_reblockable, is_fishy
+from ipblocker import logger
+import datetime
+
+def block(ip, who, comment, duration, force_block):
+    block_record = get_blocked_ip(ip)
+
+    if not block_record and not force_block:
+        logger.info("%s - Not blocking %s" % (who, ip))
+        return False
+
+    block_ip(ip=ip, who=who, comment=comment, duration=duration, extend_only=True)
+
+    if not block_record:
+        logger.info("%s - %s blocked: %s" % (who, ip, comment))
+    else:
+        logger.debug("%s - %s re-blocked" % (who, ip))
+    return True
+
+
+def main(who, comment=None, duration=3600, force_block=False):
+    for line in sys.stdin:
+        ip = line.strip()
+        block(ip, who, comment, duration, force_block)
+
+if __name__ == "__main__":
+    from optparse import OptionParser
+    parser = OptionParser(usage="usage: %prog -w who [options]")
+    parser.add_option("-c", "--comment", dest="comment",  action="store",      help="block comment",default=None)
+    parser.add_option("-d", "--duration",dest="duration", action="store",      help="The duration of the block in seconds",default=3600)
+    parser.add_option("-f", "--force",   dest="force",    action="store_true", help="really block",default=False)
+    parser.add_option("-w", "--who",     dest="who",      action="store",      help="The name of the person/system doing the blocking",default=None)
+    (options, args) = parser.parse_args()
+    if not options.who:
+        parser.print_help()
+        sys.exit(1)
+
+    main(options.who, options.comment, options.duration, options.force)

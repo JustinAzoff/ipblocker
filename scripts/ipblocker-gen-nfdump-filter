@@ -12,20 +12,39 @@ def save(fn, s):
     os.rename(nfn, fn)
 
 def main(output_file, flagged=False, dest_only=False, base_filter=None):
-    s = ""
+    """Generate nfdump filter like
+    (base filter)        AND ((single filter                ) OR (cidr filter))
+    (not net 1.1.1.0/24) AND ((dst host in [4.4.4.4 3.3.3.3]) OR (dst net 1.2.3.0/24 or dst net 1.2.2.0/24))
+    """
+    bf = ""
     if base_filter:
-        s += "(%s) AND " % (base_filter)
+        bf = "(%s) AND" % (base_filter)
 
-    if dest_only:
-        s += "dst host in ["
-    else:
-        s += "host in ["
-
+    single = []
+    cidr = []
+    sf = cf = ''
     for b in model.get_all_that_should_be_blocked():
         if flagged == False or b.flag_traffic:
-            s += b.ip + " "
-    s += "]\n"
-    save(output_file, s)
+            if '/' in b.ip:
+                cidr.append(b.ip)
+            else:
+                single.append(b.ip)
+
+    if single:
+        if dest_only:
+            sf += "(dst host in [%s])" % ' '.join(single)
+        else:
+            sf += "(host in [%s])"     % ' '.join(single)
+    if cidr:
+        if dest_only:
+            cf += "(dst net %s)" % ' or dst net '.join(cidr)
+        else:
+            cf += "(net %s)"     % ' or net '.join(cidr)
+
+    #base filter + single filter + cidr filter
+    filter = "%s (%s)\n" % (bf, ' OR '.join([sf, cf]))
+
+    save(output_file, filter)
     model.engine.dispose()
 
 if __name__ == "__main__":

@@ -11,11 +11,15 @@ def save(fn, s):
     f.close()
     os.rename(nfn, fn)
 
-def main(output_file, flagged=False, dest_only=False):
+def main(output_file, flagged=False, dest_only=False, base_filter=None):
+    s = ""
+    if base_filter:
+        s += "(%s) AND " % (base_filter)
+
     if dest_only:
-        s = "dst host in ["
+        s += "dst host in ["
     else:
-        s = "host in ["
+        s += "host in ["
 
     for b in model.get_all_that_should_be_blocked():
         if flagged == False or b.flag_traffic:
@@ -31,6 +35,8 @@ if __name__ == "__main__":
         help="create a filter for only the 'flagged' ips",default=False)
     parser.add_option("-d", "--dest_only",  dest="dest_only", action="store_true",
         help="restrict the filter to only match outbound traffic to a blocked IP",default=False)
+    parser.add_option("-b", "--base-filter",  dest="base_filter", action="store",
+        help="base filter to be applied. for example: 'not host 1.2.3.4'",default=False)
     (options, args) = parser.parse_args()
 
     if len(args) != 1:
@@ -38,4 +44,4 @@ if __name__ == "__main__":
         sys.exit(1)
 
     fn = args[0]
-    main(fn, options.flagged, options.dest_only)
+    main(fn, options.flagged, options.dest_only, options.base_filter)

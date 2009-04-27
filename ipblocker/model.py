@@ -12,10 +12,11 @@ methods for inspecting the database.
 
 """
 
+import sqlalchemy
 from sqlalchemy import *
 from sqlalchemy.orm import *
 from sqlalchemy.exceptions import SQLError
-from sqlalchemy import *
+from sqlalchemy.databases.postgres import PGInet, PGMacAddr
 import sqlalchemy.types as sqltypes
 import ConfigParser
 
@@ -25,6 +26,8 @@ from ipblocker.config import config
 
 import psycopg2
 import random
+
+
 
 def connect():
     db_config = dict(config.items('db'))
@@ -37,8 +40,13 @@ def connect():
             pass
     raise e
 
+#HACK
+if sqlalchemy.__version__.startswith("0.5"):
+    kwargs = {'autocommit': True}
+else:
+    kwargs = {'transactional': False}
 engine = create_engine('postgres://', creator=connect,pool_recycle=60)
-Session = scoped_session(sessionmaker(autoflush=True, transactional=False, bind=engine))
+Session = scoped_session(sessionmaker(autoflush=True, bind=engine, **kwargs))
 metadata = MetaData(bind=engine)
 mapper = Session.mapper
 
@@ -47,14 +55,6 @@ try :
 except ImportError:
     from webhelpers.date import distance_of_time_in_words
 
-
-class PGMac(sqltypes.TypeEngine):
-    def get_col_spec(self):
-        return "MACADDR"
-
-class PGInet(sqltypes.TypeEngine):
-    def get_col_spec(self):
-        return "INET"
 
 class DontBlockException(Exception):
     def __init__(self, ip, who, comment):
@@ -197,7 +197,7 @@ def get_ip(ip):
     return Block.query.filter(Block.ip==ip).all()
 
 def get_blocked_ip(ip):
-    """Return a single Blocked IP, or None if it is not currently blocked
+    """Return a single Blocked IP, or None if it is not currently blocked.
        Pending is considered Blocked, otherwise unblock_now won't work right"""
     return Block.query.filter(and_(Block.unblocked==None,Block.ip==ip)).first()
 

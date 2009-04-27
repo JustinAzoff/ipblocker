@@ -16,7 +16,7 @@ import sqlalchemy
 from sqlalchemy import *
 from sqlalchemy.orm import *
 from sqlalchemy.exceptions import SQLError
-from sqlalchemy.databases.postgres import PGInet, PGMacAddr
+from sqlalchemy.databases.postgres import PGInet
 import sqlalchemy.types as sqltypes
 import ConfigParser
 

@@ -4,6 +4,8 @@ from ipblocker import logger, config
 import time
 from ipblocker.notify import notify_block
 
+from IPy import IP
+
 try :
     import memcache
 except ImportError:
@@ -38,8 +40,8 @@ class Manager:
         current = set(c.nullroute_list())
         to_unblock = {}
         for b in unblock_pending:
-            to_unblock[b.ip] = b
-            if b.ip not in current:
+            to_unblock[IP(b.ip)] = b
+            if IP(b.ip) not in current:
                 logger.warning("already unblocked %s, unblocking anyway" % b.ip)
             else:
                 logger.info("unblocking %s (%s)" % (b.ip, b.who))
@@ -51,7 +53,7 @@ class Manager:
         current = set(c.nullroute_list())
 
         for b in to_unblock.values():
-            if b.ip not in current:
+            if IP(b.ip) not in current:
                 b.set_unblocked()
             else:
                 logger.error("error unblocking %s" % b.ip)
@@ -68,8 +70,8 @@ class Manager:
         current = set(c.nullroute_list())
         to_block = {}
         for b in block_pending:
-            to_block[b.ip] = b
-            if b.ip not in current:
+            to_block[IP(b.ip)] = b
+            if IP(b.ip) not in current:
                 logger.info("blocking %s (%s)" % (b.ip, b.who))
                 notify_block(b)
             else:
@@ -82,7 +84,7 @@ class Manager:
         current = set(c.nullroute_list())
 
         for b in to_block.values():
-            if b.ip in current:
+            if IP(b.ip) in current:
                 b.set_blocked()
             else:
                 logger.error("error blocking %s" % b.ip)

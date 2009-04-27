@@ -23,6 +23,7 @@ def main(output_file, flagged=False, dest_only=False, base_filter=None):
     single = []
     cidr = []
     sf = cf = ''
+    filters = []
     for b in model.get_all_that_should_be_blocked():
         if flagged == False or b.flag_traffic:
             if '/' in b.ip:
@@ -35,14 +36,16 @@ def main(output_file, flagged=False, dest_only=False, base_filter=None):
             sf += "(dst host in [%s])" % ' '.join(single)
         else:
             sf += "(host in [%s])"     % ' '.join(single)
+        filters.append(sf)
     if cidr:
         if dest_only:
             cf += "(dst net %s)" % ' or dst net '.join(cidr)
         else:
             cf += "(net %s)"     % ' or net '.join(cidr)
+        filters.append(cf)
 
     #base filter + single filter + cidr filter
-    filter = "%s (%s)\n" % (bf, ' OR '.join([sf, cf]))
+    filter = "%s (%s)\n" % (bf, ' OR '.join([filters]))
 
     save(output_file, filter)
     model.engine.dispose()

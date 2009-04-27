@@ -45,7 +45,7 @@ def main(output_file, flagged=False, dest_only=False, base_filter=None):
         filters.append(cf)
 
     #base filter + single filter + cidr filter
-    filter = "%s (%s)\n" % (bf, ' OR '.join([filters]))
+    filter = "%s (%s)\n" % (bf, ' OR '.join(filters))
 
     save(output_file, filter)
     model.engine.dispose()

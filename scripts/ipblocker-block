@@ -12,4 +12,4 @@ user = os.getenv("USER")
 
 ip, comment,duration = sys.argv[1:]
 duration = int(duration)
-block_ip(ip=ip, who=user, comment=comment, duration=duration)
+block_ip(ip=ip, who=user, comment=comment, duration=duration, flag_traffic=True)

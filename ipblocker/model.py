@@ -344,16 +344,7 @@ mapper(Fishy, fishy)
 #CREATE INDEX idx_unblocked_null ON blocks (unblocked) WHERE unblocked IS NOT NULL;
 
 __all__ = '''
-    Block
-    get_blocked get_blocked_ip get_block_pending get_unblock_pending
-    get_dont_block_record
-    block_ip unblock_ip
-    is_reblockable
-    get_fishy_ip is_fishy get_fishy add_fishy del_fishy
-    '''.split()
-
-__all__ = '''
-    Block
+    Block DontBlockException
     get_all get_all_that_should_be_blocked get_blocked get_ip
     get_blocked_ip get_block_pending get_unblock_pending list_dont_block_records
     add_dont_block_record get_dont_block_record delete_dont_block_record

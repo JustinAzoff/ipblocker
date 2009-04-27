@@ -37,4 +37,5 @@ if __name__ == "__main__":
         parser.print_help()
         sys.exit(1)
 
+    options.duration = int(options.duration)
     main(options.who, options.comment, options.duration, options.force)

@@ -276,12 +276,12 @@ def block_ip(ip, who, comment, duration, flag_traffic=False, extend_only=False):
 
     b = get_blocked_ip(ip)
     if b:
-        b.who = who
         b.flag_traffic = flag_traffic
-        if comment not in b.comment:
+        if b.who != who:
             b.comment += "\n" + comment
         if not ( extend_only and b.unblock_delta > diff ):
             b.unblock_at = unblock_at
+        b.who = who
     else:
         b = Block(ip=ip, who=who, comment=comment, unblock_at=unblock_at, flag_traffic=flag_traffic)
     Session.flush()

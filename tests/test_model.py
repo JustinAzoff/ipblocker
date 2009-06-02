@@ -90,12 +90,15 @@ def test_unblock_now():
     block = block_ip(IP, 'justin', 'just testing', 10)
     block.set_blocked()
 
+    assert model.was_force_unblocked(IP) == False
+
     pending = model.get_unblock_pending()
     assert len(pending)==0
     block.set_unblock_now()
     pending = model.get_unblock_pending()
     assert len(pending)==1
 
+    assert model.was_force_unblocked(IP) == True
 
 def test_dont_block():
     b = model.get_dont_block_record(IP)

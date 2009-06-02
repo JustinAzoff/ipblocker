@@ -25,6 +25,9 @@ def block():
     for r in all:
         msg = simplejson.dumps(r)
         ip = r['ip']
+        if not model.ok_to_block(ip):
+            logger.debug("Not DB-blocking %s" % ip)
+            continue
         model.block_ip(ip=ip, who='ren-isac', comment=msg, duration=DURATION,flag_traffic=True)
         logger.debug("DB-blocking %s" % ip)
 

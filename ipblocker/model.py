@@ -243,10 +243,22 @@ def get_dont_block_record(ip):
 def delete_dont_block_record(id):
     dont_block.delete(dont_block.c.id==id).execute().close()
 
+def was_force_unblocked(ip):
+    """Was this IP forced to be 'unblocked now'?"""
+    r = Block.query.filter(Block.ip==ip).order_by(Block.entered.desc()).first()
+    if r and r.unblock_now:
+        return True
+    return False
+
 def ok_to_block(ip):
     """Is this IP ok to block?"""
     r = get_dont_block_record(ip)
-    return not r
+    if r:
+        return False
+
+    if was_force_unblocked(ip):
+        return False
+    return True
 
 
 def block_ip(ip, who, comment, duration, flag_traffic=False, extend_only=False):

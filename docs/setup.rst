@@ -16,9 +16,7 @@ Install everything
     root# su - ipblocker
     ipblocker$ virtualenv ipblocker_env
     ipblocker$ . ipblocker_env/bin/activate
-    (ipblocker_env)ipblocker$ easy_install cisco*gz cymruwhois*gz ieeemac*gz\
-                pynfdump*gz snort*gz ren_isac*gz ipblocker*gz python-memcached
-
+    (ipblocker_env)ipblocker$ easy_install -f . ipblocker snort pynfdump
 
 
 Setup cisco library
@@ -109,7 +107,7 @@ Setup Crontab
 -------------
 ::
 
-    PATH=$PATH:~/ipblocker_env/bin
+    PATH=/bin:/usr/bin:/home/ipblocker/ipblocker_env/bin
     # m h  dom mon dow   command
     * * * * * timeout 200 ipblocker-manage-nullroutes
     0 * * * * sleep 20;timeout 600 ipblocker-block-ren-isac > /dev/null

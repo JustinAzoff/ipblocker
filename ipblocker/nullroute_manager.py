@@ -91,7 +91,7 @@ class Manager:
 
 
     def manage(self):
-        self.model.Session.clear()
+        self.model.Session.expunge_all()
         try:
             self.unblock()
         except Exception, e:

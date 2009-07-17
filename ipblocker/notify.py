@@ -4,6 +4,7 @@ except ImportError:
     Client = None
 
 def notify_block(b):
+    return
     if not Client:
         return
 

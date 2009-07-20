@@ -21,7 +21,7 @@ setup(name='ipblocker',
       install_requires=[
           "SQLAlchemy >= 0.4",
           "WebHelpers",
-          "ren_isac",
+          "renisac",
           "cisco",
           # -*- Extra requirements: -*-
       ],

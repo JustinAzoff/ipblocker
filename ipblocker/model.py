@@ -48,7 +48,22 @@ else:
 engine = create_engine('postgres://', creator=connect,pool_recycle=60)
 Session = scoped_session(sessionmaker(autoflush=True, bind=engine, **kwargs))
 metadata = MetaData(bind=engine)
-mapper = Session.mapper
+
+
+from sqlalchemy.orm import mapper as sqla_mapper
+
+def session_mapper(scoped_session):
+    def mapper(cls, *arg, **kw):
+        if cls.__init__ is object.__init__:
+            def __init__(self, **kwargs):
+                for key, value in kwargs.items():
+                    setattr(self, key, value)
+            cls.__init__ = __init__
+        sqla_mapper(cls, *arg, **kw)
+        cls.query = scoped_session.query_property()
+    return mapper
+
+mapper = session_mapper(Session)
 
 try :
     from webhelpers import distance_of_time_in_words
@@ -231,6 +246,7 @@ def list_dont_block_records():
 
 def add_dont_block_record(ip, who, comment):
     b = DontBlock(ip=ip, who=who, comment=comment)
+    Session.add(b)
     Session.flush()
     return b
 
@@ -296,6 +312,7 @@ def block_ip(ip, who, comment, duration, flag_traffic=False, extend_only=False):
         b.who = who
     else:
         b = Block(ip=ip, who=who, comment=comment, unblock_at=unblock_at, flag_traffic=flag_traffic)
+    Session.add(b)
     Session.flush()
     return b
 
@@ -342,6 +359,7 @@ def add_fishy(ip, comment):
     f = Fishy()
     f.ip = ip
     f.comment = comment
+    Session.add(f)
     Session.flush()
 
 def del_fishy(ip):

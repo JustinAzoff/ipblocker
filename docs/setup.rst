@@ -12,7 +12,7 @@ Install everything
 ------------------
 .. code-block:: bash
 
-    root# apt-get install python-setuptools python-virtualenv python-psycopg2 postgresql-8.3 timeout
+    root# apt-get install python-setuptools python-virtualenv python-psycopg2 postgresql-8.3 timeout python-simplejson
     root# su - ipblocker
     ipblocker$ virtualenv ipblocker_env
     ipblocker$ . ipblocker_env/bin/activate

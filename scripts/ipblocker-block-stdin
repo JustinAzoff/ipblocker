@@ -4,7 +4,7 @@ from ipblocker import block_ip, get_blocked_ip, is_reblockable, ok_to_block
 from ipblocker import logger
 import datetime
 
-def block(ip, who, comment, duration=60*60*24, force_block=False, flag_traffic=False):
+def block(ip, who, comment, duration, force_block, flag_traffic):
     block_record = get_blocked_ip(ip)
 
     if not block_record and not force_block:
@@ -23,10 +23,10 @@ def block(ip, who, comment, duration=60*60*24, force_block=False, flag_traffic=F
     return True
 
 
-def main(who, comment=None, duration=3600, force_block=False):
+def main(who, comment=None, duration=3600, force_block=False, flag_traffic=False):
     for line in sys.stdin:
         ip = line.strip()
-        block(ip, who, comment, duration, force_block)
+        block(ip, who, comment, duration, force_block, flag_traffic)
 
 if __name__ == "__main__":
     from optparse import OptionParser

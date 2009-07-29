@@ -4,7 +4,7 @@ from ipblocker import block_ip, get_blocked_ip, is_reblockable, ok_to_block
 from ipblocker import logger
 import datetime
 
-def block(ip, who, comment, duration, force_block):
+def block(ip, who, comment, duration=60*60*24, force_block=False, flag_traffic=False):
     block_record = get_blocked_ip(ip)
 
     if not block_record and not force_block:
@@ -14,7 +14,7 @@ def block(ip, who, comment, duration, force_block):
     if not ok_to_block(ip):
         logger.info("%s - Not OK to block %s" % (who, ip)) 
 
-    block_ip(ip=ip, who=who, comment=comment, duration=duration, extend_only=True)
+    block_ip(ip=ip, who=who, comment=comment, duration=duration, extend_only=True, flag_traffic=flag_traffic)
 
     if not block_record:
         logger.info("%s - %s blocked: %s" % (who, ip, comment))
@@ -34,6 +34,7 @@ if __name__ == "__main__":
     parser.add_option("-c", "--comment", dest="comment",  action="store",      help="block comment",default=None)
     parser.add_option("-d", "--duration",dest="duration", action="store",      help="The duration of the block in seconds",default=3600)
     parser.add_option("-f", "--force",   dest="force",    action="store_true", help="really block",default=False)
+    parser.add_option("-g", "--flag",    dest="flag",     action="store_true", help="flag traffic",default=False)
     parser.add_option("-w", "--who",     dest="who",      action="store",      help="The name of the person/system doing the blocking",default=None)
     (options, args) = parser.parse_args()
     if not options.who:
@@ -41,4 +42,4 @@ if __name__ == "__main__":
         sys.exit(1)
 
     options.duration = int(options.duration)
-    main(options.who, options.comment, options.duration, options.force)
+    main(options.who, options.comment, options.duration, options.force, options.flag)

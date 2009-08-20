@@ -1,6 +1,6 @@
 #!/bin/sh
 while true;do
-    timeout 120 ipblocker-manage-nullroutes | mail -e -s 'ipblocker output' root
+    timeout 120 ipblocker-manage-nullroutes | mail -e -s 'ipblocker output' ipblocker
     tcpsleep -p 11112 60
     sleep 1
 done

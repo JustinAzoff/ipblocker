@@ -22,6 +22,7 @@ setup(name='ipblocker',
           "SQLAlchemy >= 0.4",
           "WebHelpers",
           "cisco",
+          "tcpsleep",
           # -*- Extra requirements: -*-
       ],
       entry_points="""

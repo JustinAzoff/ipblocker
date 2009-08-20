@@ -1,8 +1,9 @@
 #!/usr/bin/env python 
 import os, sys
-from ipblocker import block_ip, get_blocked_ip, is_reblockable, ok_to_block
+from ipblocker import block_ip, get_blocked_ip, is_reblockable, ok_to_block, get_block_pending
 from ipblocker import logger
 import datetime
+from ipblocker.util import wakeup_backend
 
 def block(ip, who, comment, duration, force_block, flag_traffic):
     block_record = get_blocked_ip(ip)
@@ -27,6 +28,8 @@ def main(who, comment=None, duration=3600, force_block=False, flag_traffic=False
     for line in sys.stdin:
         ip = line.strip()
         block(ip, who, comment, duration, force_block, flag_traffic)
+    if get_block_pending():
+        wakeup_backend()
 
 if __name__ == "__main__":
     from optparse import OptionParser

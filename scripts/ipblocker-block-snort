@@ -1,9 +1,9 @@
 #!/usr/bin/env python 
 from snort import snortdb
-from ipblocker import block_ip, get_blocked_ip, is_reblockable, is_fishy
+from ipblocker import block_ip, get_blocked_ip, is_reblockable, is_fishy, get_block_pending
 from ipblocker import logger
 import os
-from ipblocker.util import groupby, subnet
+from ipblocker.util import groupby, subnet, wakeup_backend
 from operator import itemgetter
 
 import datetime
@@ -78,6 +78,8 @@ def block(ip, alerts, force_block=False):
 def main(force_block=False):
     for ip, alerts in do_sigs():
         block(ip, alerts, force_block)
+    if get_block_pending():
+        wakeup_backend()
 
 if __name__ == "__main__":
     from optparse import OptionParser

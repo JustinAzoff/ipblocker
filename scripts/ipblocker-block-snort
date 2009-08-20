@@ -13,6 +13,7 @@ sigs = [
     'ET SCAN LibSSH Based SSH Connection',
     'ET SCAN Potential SSH Scan',
     'VNC Scan 5900-5920',
+    'ET EXPLOIT RealVNC Authentication Bypass Attempt',
     'ET SCAN MYSQL 4.1 brute force root login attempt', 
     'ET SCAN Behavioral Unusually fast Terminal Server Traffic, Potential Scan or Infection',
     'ET SCAN Tomcat Auth Brute Force attempt',

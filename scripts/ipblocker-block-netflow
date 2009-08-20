@@ -1,16 +1,16 @@
 #!/usr/bin/env python 
 import pynfdump
-from ipblocker import block_ip, get_blocked_ip, is_reblockable, is_fishy
+from ipblocker import block_ip, get_blocked_ip, is_reblockable, is_fishy, DontBlockException
 from ipblocker import logger
 from ipblocker import is_country_ok
 from ipblocker import util, config
 
 import datetime
+import traceback
 
 ABSOLUTE_MINIMUM = 128
 BAD_COUNTRY_SUBNET_MINIMUM = 1
 OK_COUNTRY_SUBNET_MINIMUM = 3
-SUBNET_MINIMUM = max(BAD_COUNTRY_SUBNET_MINIMUM, OK_COUNTRY_SUBNET_MINIMUM)
 
 country_ok_min_mapping = {
     True: OK_COUNTRY_SUBNET_MINIMUM,
@@ -85,7 +85,11 @@ def block(ip, data, rec, force_block=False):
 
 def main(force_block=False):
     for ip, data, rec in do_ports():
-        block(ip, data, rec, force_block)
+        try :
+            block(ip, data, rec, force_block)
+        except DontBlockException:
+            traceback.print_exc()
+            
 
 if __name__ == "__main__":
     from optparse import OptionParser

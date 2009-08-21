@@ -1,5 +1,2 @@
 #!/bin/sh
-exec 2>&1
-cd ~ipblocker
-export PATH=/bin:/usr/bin:/home/ipblocker/ipblocker_env/bin
-setuidgid ipblocker ipblocker-manage-loop
+exec envdir ./env ./run2

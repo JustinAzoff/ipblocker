@@ -1,0 +1,4 @@
+#!/bin/sh
+exec 2>&1
+cd ~ipblocker
+exec setuidgid ipblocker envuidgid ipblocker ipblocker-manage-loop

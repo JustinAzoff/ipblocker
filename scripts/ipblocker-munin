@@ -24,7 +24,7 @@ def config():
     data = get_counts()
     names = [who for who,cnt in data]
     print """
-graph_args --vertical-label Blocked Hosts
+graph_args --vertical-label Hosts
 graph_title Hosts Blocked by IPBlocker
 graph_category security
 graph_info This graph shows the number of hosts blocked by IPBlocker

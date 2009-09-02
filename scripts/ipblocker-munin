@@ -27,6 +27,7 @@ graph_info This graph shows the number of hosts blocked by IPBlocker
     print "graph_order %s" % " ".join(names)
     for who,cnt in data:
         print "%s.draw STACK" % who
+        print "%s.label %s" % (who, who)
 
 
 if __name__ == "__main__":

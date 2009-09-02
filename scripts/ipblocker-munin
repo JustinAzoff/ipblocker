@@ -15,6 +15,11 @@ def main():
     for who, cnt in data:
         print "%s.value %s" % ( who, cnt )
 
+def kinds():
+    yield 'AREA'
+    while 1:
+        yield 'STACK'
+
 def config():
     data = get_counts()
     names = [who for who,cnt in data]
@@ -24,9 +29,11 @@ graph_title Hosts Blocked by IPBlocker
 graph_category security
 graph_info This graph shows the number of hosts blocked by IPBlocker
 """.strip()
+
     print "graph_order %s" % " ".join(names)
+    kind = iter(kinds())
     for who,cnt in data:
-        print "%s.draw STACK" % who
+        print "%s.draw %s" % (who, kind.next())
         print "%s.label %s" % (who, who)
 
 

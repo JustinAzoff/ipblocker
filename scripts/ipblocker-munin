@@ -28,6 +28,7 @@ graph_args --vertical-label Hosts
 graph_title Hosts Blocked by IPBlocker
 graph_category security
 graph_info This graph shows the number of hosts blocked by IPBlocker
+graph_total Total
 """.strip()
 
     print "graph_order %s" % " ".join(names)

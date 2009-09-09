@@ -30,7 +30,7 @@ class SourceBlocker:
         if self.must_exist_in_source:
             for b in self.model.get_all_that_should_be_blocked():
                 if b.who == self.blocker and b.ip not in all_ips:
-                    self.model.unblock_ip(b.ip)
+                    self.model.unblock_ip(b.ip, forced=False)
                     logger.info("DB-unblocking %s" % b.ip)
 
         for r in all:

@@ -154,7 +154,7 @@ class Block(object):
         self.unblocked = datetime.datetime.now()
         Session.flush()
 
-    def set_unblock_now(self):
+    def set_unblock_now(self, forced=True):
         """Set this IP to be unblocked
         
         >>> b.unblock_now
@@ -163,7 +163,10 @@ class Block(object):
         >>> b.unblock_now
         True
         """
-        self.unblock_now = True
+        if forced:
+            self.unblock_now = True
+        else:
+            self.unblock_at = datetime.datetime.now()
         Session.flush()
 
     def _get_unblock_at_relative(self):
@@ -320,14 +323,15 @@ def block_ip(ip, who, comment, duration, flag_traffic=False, extend_only=False):
     Session.flush()
     return b
 
-def unblock_ip(ip):
+def unblock_ip(ip, forced=True):
     """Un-block this IP address
 
     :param ip: IP Address to un-block
+    :param forced: If this should show up as a force unblock, if so, this IP won't be blocked again.
     """
     b = get_blocked_ip(ip)
     if b:
-        b.set_unblock_now()
+        b.set_unblock_now(forced)
         return True
     else:
         return False

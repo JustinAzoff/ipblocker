@@ -10,6 +10,7 @@ import datetime
 
 #TODO: put in config file
 sigs = [
+    'ET SCAN LibSSH Based Frequent SSH Connections Likely BruteForce Attack',
     'ET SCAN LibSSH Based SSH Connection',
     'ET SCAN Potential SSH Scan',
     'VNC Scan 5900-5920',

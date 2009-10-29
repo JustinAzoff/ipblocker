@@ -39,8 +39,13 @@ class SourceBlocker:
             if not self.model.ok_to_block(ip):
                 logger.debug("Not DB-blocking %s" % ip)
                 continue
+            block_record = self.model.get_blocked_ip(ip)
+            if block_record:
+                logger.debug("DB-blocking %s" % ip)
+            else:
+                logger.debug("DB-re-blocking %s" % ip)
             self.model.block_ip(ip=ip, who=self.blocker, comment=msg, duration=self.duration,flag_traffic=self.flag_traffic)
-            logger.debug("DB-blocking %s" % ip)
+                
 
         if self.model.get_block_pending() or self.model.get_unblock_pending():
             util.wakeup_backend()

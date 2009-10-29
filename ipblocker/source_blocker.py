@@ -41,11 +41,11 @@ class SourceBlocker:
                 logger.debug("Not DB-blocking %s" % ip)
                 continue
             block_record = self.model.get_blocked_ip(ip)
-            if block_record:
-                logger.debug("DB-re-blocking %s" % ip)
-            else:
-                logger.debug("DB-blocking %s" % ip)
             if self.reblockable or not block_record:
+                if block_record:
+                    logger.debug("DB-re-blocking %s" % ip)
+                else:
+                    logger.debug("DB-blocking %s" % ip)
                 self.model.block_ip(ip=ip, who=self.blocker, comment=msg, duration=self.duration,flag_traffic=self.flag_traffic)
                 
 

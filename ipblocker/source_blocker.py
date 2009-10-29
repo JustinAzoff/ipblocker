@@ -7,6 +7,7 @@ from ipblocker import util
 class SourceBlocker:
     duration = 60*60*24
     must_exist_in_source = True
+    reblockable = True
     blocker = None
     flag_traffic = True
 
@@ -44,7 +45,8 @@ class SourceBlocker:
                 logger.debug("DB-re-blocking %s" % ip)
             else:
                 logger.debug("DB-blocking %s" % ip)
-            self.model.block_ip(ip=ip, who=self.blocker, comment=msg, duration=self.duration,flag_traffic=self.flag_traffic)
+            if self.reblockable or not block_record:
+                self.model.block_ip(ip=ip, who=self.blocker, comment=msg, duration=self.duration,flag_traffic=self.flag_traffic)
                 
 
         if self.model.get_block_pending() or self.model.get_unblock_pending():

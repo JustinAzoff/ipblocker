@@ -1,0 +1,35 @@
+#!/usr/bin/python
+from ipblocker import model
+import sys
+import os
+import csv
+
+def main(output_file):
+    c = model.blocks.c
+    data = model.select([c.ip, c.who],distinct=True).execute().fetchall()
+
+    nfn = output_file + '.new'
+    f = open(nfn, 'w')
+    w = csv.writer(f)
+
+    w.writerow(('destip', 'who'))
+    for ip, who in data:
+        w.writerow((ip, who))
+        
+    os.fsync(f.fileno())
+    f.close()
+
+    os.rename(nfn, output_file)
+
+if __name__ == "__main__":
+    from optparse import OptionParser
+    parser = OptionParser(usage="usage: %prog [options] /path/to/lookup_table.csv")
+    (options, args) = parser.parse_args()
+
+    if len(args) != 1:
+        parser.print_help()
+        sys.exit(1)
+
+    fn = args[0]
+    main(fn)
+    model.engine.dispose()

@@ -22,7 +22,7 @@ sigs = [
 MINIMUM = 32
 SUBNET_MINIMUM = 3
 
-BLOCK_TIME = 60*60*24
+BLOCK_TIME = 60*60*24*7
 
 def num_subnets(alerts):
     by_dst = groupby(alerts, lambda a: subnet(a['ip_dst']))

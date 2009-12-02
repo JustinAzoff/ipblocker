@@ -7,7 +7,7 @@ import csv
 def main(output_file):
     seen = set()
     c = model.blocks.c
-    data = model.blocks.select().order_by(c.entered.desc()).execute()
+    data = model.blocks.select(c.flag_traffic==True).order_by(c.entered.desc()).execute()
 
     nfn = output_file + '.new'
     f = open(nfn, 'w')

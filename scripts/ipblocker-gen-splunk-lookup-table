@@ -5,16 +5,19 @@ import os
 import csv
 
 def main(output_file):
+    seen = set()
     c = model.blocks.c
-    data = model.select([c.ip, c.who],distinct=True).execute().fetchall()
+    data = model.blocks.select().order_by(c.entered.desc()).execute()
 
     nfn = output_file + '.new'
     f = open(nfn, 'w')
     w = csv.writer(f)
 
-    w.writerow(('dstip', 'who'))
-    for ip, who in data:
-        w.writerow((ip, who))
+    w.writerow(('dstip', 'who','comment'))
+    for b in data:
+        if b.ip in seen: continue
+        w.writerow((b.ip, b.who,b.comment[:100]))
+        seen.add(b.ip)
         
     os.fsync(f.fileno())
     f.close()

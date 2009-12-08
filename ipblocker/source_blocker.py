@@ -51,4 +51,4 @@ class SourceBlocker:
 
         if self.model.get_block_pending() or self.model.get_unblock_pending():
             util.wakeup_backend()
-        model.disconnect()
+        self.model.disconnect()

@@ -81,6 +81,7 @@ def main(force_block=False):
         block(ip, alerts, force_block)
     if get_block_pending():
         wakeup_backend()
+    model.disconnect()
 
 if __name__ == "__main__":
     from optparse import OptionParser

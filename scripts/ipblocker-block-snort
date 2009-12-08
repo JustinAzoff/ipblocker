@@ -1,6 +1,6 @@
 #!/usr/bin/env python 
 from snort import snortdb
-from ipblocker import block_ip, get_blocked_ip, is_reblockable, is_fishy, get_block_pending
+from ipblocker import block_ip, get_blocked_ip, is_reblockable, is_fishy, get_block_pending, disconnect
 from ipblocker import logger
 import os
 from ipblocker.util import groupby, subnet, wakeup_backend
@@ -81,7 +81,7 @@ def main(force_block=False):
         block(ip, alerts, force_block)
     if get_block_pending():
         wakeup_backend()
-    model.disconnect()
+    disconnect()
 
 if __name__ == "__main__":
     from optparse import OptionParser

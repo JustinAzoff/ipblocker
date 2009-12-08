@@ -29,3 +29,4 @@ if __name__ == "__main__":
             show_one(ip)
     else:
         show_all(options.verbose)
+    model.disconnect()

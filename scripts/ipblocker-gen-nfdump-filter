@@ -48,7 +48,7 @@ def main(output_file, flagged=False, dest_only=False, base_filter=None):
     filter = "%s (%s)\n" % (bf, ' OR '.join(filters))
 
     save(output_file, filter)
-    model.engine.dispose()
+    model.disconnect()
 
 if __name__ == "__main__":
     from optparse import OptionParser

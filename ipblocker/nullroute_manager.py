@@ -110,4 +110,4 @@ class Manager:
         if memcache and host:
             mc = memcache.Client([host])
             mc.set("ipblocker:last_manager_runtime", time.ctime())
-        self.model.engine.dispose()
+        self.model.disconnect()

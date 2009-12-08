@@ -35,4 +35,4 @@ if __name__ == "__main__":
 
     fn = args[0]
     main(fn)
-    model.engine.dispose()
+    model.disconnect()

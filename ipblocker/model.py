@@ -374,6 +374,10 @@ def del_fishy(ip):
     """Remove a fishy IP record"""
     fishy.delete(fishy.c.ip==ip).execute().close()
 
+def disconnect():
+    """Cleanly disconnect from the database"""
+    engine.dispose()
+
 mapper(Block, blocks)
 mapper(DontBlock, dont_block)
 mapper(Fishy, fishy)
@@ -387,5 +391,7 @@ __all__ = '''
     get_blocked_ip get_block_pending get_unblock_pending list_dont_block_records
     add_dont_block_record get_dont_block_record delete_dont_block_record
     ok_to_block block_ip unblock_ip is_reblockable
-    get_fishy_ip is_fishy get_fishy add_fishy del_fishy'''.split()
+    get_fishy_ip is_fishy get_fishy add_fishy del_fishy
+    disconnect
+    '''.split()
 

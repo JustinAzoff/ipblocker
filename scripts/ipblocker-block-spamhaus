@@ -11,7 +11,7 @@ class SHBlocker(SourceBlocker):
     blocker = 'spamhaus'
     duration = 60*60*24*30
     must_exist_in_source = True
-    flag_traffic = True
+    flag_traffic = False
 
     def get_records(self):
         h = httplib2.Http(os.path.expanduser("~/.httplib2_cache"))

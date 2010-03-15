@@ -9,7 +9,7 @@ from ipblocker.nullroute_manager import Manager
 IP = config.get("nullrouter","ip")
 
 def main():
-    m = Manager(IP, model, ciscolib)
+    m = Manager(IP, model, ciscossh)
     m.manage()
 
 if __name__ == "__main__":

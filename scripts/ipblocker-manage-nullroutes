@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from ipblocker import model
-from cisco import ciscolib
+from cisco import ciscossh
 from ipblocker.config import config
 
 from ipblocker.nullroute_manager import Manager

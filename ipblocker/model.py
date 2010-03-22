@@ -90,7 +90,7 @@ blocks = Table('blocks', metadata,
     Column('unblocked', DateTime, index=True),
     Column('unblock_at', DateTime, nullable=False),
     Column('unblock_now',   Boolean, default=False,nullable=False),
-    Column('flag_traffic',  Boolean, default=False,nullable=False),
+    Column('flag_traffic',  Boolean, index=True,default=False,nullable=False),
 )
 
 dont_block = Table('dont_block', metadata,

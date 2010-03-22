@@ -233,17 +233,25 @@ def list_dont_block_records():
     """Return the list of don't block records"""
     return DontBlock.query.all()
 
+dont_block_tree=None
 def get_dont_block_subnet_tree():
     """Return the list of don't block records as a SubnetTree object"""
+    global dont_block_tree
+    if dont_block_tree:
+        return dont_block_tree
     t = SubnetTree.SubnetTree()
     for rec in list_dont_block_records():
         t[rec.ip] = rec
+    dont_block_tree = t
     return t
 
 def add_dont_block_record(ip, who, comment):
+    """Add an ip to the list of don't block records"""
+    global dont_block_tree
     b = DontBlock(ip=ip, who=who, comment=comment)
     Session.add(b)
     Session.flush()
+    dont_block_tree = None
     return b
 
 def get_dont_block_record(ip):
@@ -253,7 +261,10 @@ def get_dont_block_record(ip):
         return t[ip]
 
 def delete_dont_block_record(id):
+    """Remove an ip from the list of don't block records"""
     dont_block.delete(dont_block.c.id==id).execute().close()
+    global dont_block_tree
+    dont_block_tree = None
 
 def was_force_unblocked(ip):
     """Was this IP forced to be 'unblocked now'?"""

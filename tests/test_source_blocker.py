@@ -24,8 +24,15 @@ class fake_model:
         return True
     def block_ip(self, ip, who, comment, duration,flag_traffic):
         self.block_pending.append(ip)
-    def unblock_ip(self, ip):
+    def unblock_ip(self, ip,forced=False):
         self.unblock_pending.append(ip)
+
+    def get_blocked_ip(self, ip):
+        return ip in self.blocked
+
+    def disconnect(self):
+        pass
+
 
 class a_blocker(SourceBlocker):
     blocker = 'whatever'

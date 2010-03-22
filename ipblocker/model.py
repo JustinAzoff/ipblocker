@@ -26,26 +26,15 @@ from ipblocker.config import config
 
 import psycopg2
 import random
-
-
-
-def connect():
-    db_config = dict(config.items('db'))
-    hosts = db_config.pop('host').split(',')
-    random.shuffle(hosts)
-    for host in hosts:
-        try :
-            return psycopg2.connect(host=host, user=db_config['user'], password=db_config['password'], database=db_config['database'])
-        except Exception, e:
-            pass
-    raise e
+import SubnetTree
 
 #HACK
 if sqlalchemy.__version__.startswith("0.5"):
     kwargs = {'autocommit': True}
 else:
     kwargs = {'transactional': False}
-engine = create_engine('postgres://', creator=connect,pool_recycle=60)
+dburi = config.get("db","uri")
+engine = create_engine(dburi)
 Session = scoped_session(sessionmaker(autoflush=True, bind=engine, **kwargs))
 metadata = MetaData(bind=engine)
 
@@ -203,7 +192,6 @@ def get_all_that_should_be_blocked():
             Block.unblocked==None,            #hasn't been unblocked yet
             Block.unblock_now == False,       #it isn't forced unblocked
             func.now() < Block.unblock_at,    #it hasn't timed out yet
-            ~exists([1],dont_block.c.ip.op(">>=")(Block.ip)),
             )).all()
 
 def get_blocked():
@@ -228,7 +216,6 @@ def get_block_pending():
         Block.blocked==None, #it's not already blocked
         Block.unblock_now==False, #it isn't forced unblocked
         func.now() < Block.unblock_at,    #it hasn't already timed out
-        ~exists([1],dont_block.c.ip.op(">>=")(Block.ip)),
         )).all()
 
 def get_unblock_pending():
@@ -240,12 +227,18 @@ def get_unblock_pending():
             or_(
                 Block.unblock_now==True,                   #force unblock
                 func.now() > Block.unblock_at,             #block expired
-                exists([1],dont_block.c.ip.op(">>=")(Block.ip)) #ip shouldn't be blocked
             ))).all()
 
 def list_dont_block_records():
     """Return the list of don't block records"""
     return DontBlock.query.all()
+
+def get_dont_block_subnet_tree():
+    """Return the list of don't block records as a SubnetTree object"""
+    t = SubnetTree.SubnetTree()
+    for rec in list_dont_block_records():
+        t[rec.ip] = rec
+    return t
 
 def add_dont_block_record(ip, who, comment):
     b = DontBlock(ip=ip, who=who, comment=comment)
@@ -255,9 +248,9 @@ def add_dont_block_record(ip, who, comment):
 
 def get_dont_block_record(ip):
     """Return a record from the dont_block table for this ip, if one exists"""
-    r = DontBlock.query.filter(dont_block.c.ip.op(">>=")(ip)).all()
-    if r:
-        return r[0]
+    t = get_dont_block_subnet_tree()
+    if ip in t:
+        return t[ip]
 
 def delete_dont_block_record(id):
     dont_block.delete(dont_block.c.id==id).execute().close()

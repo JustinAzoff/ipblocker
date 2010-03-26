@@ -26,6 +26,7 @@ from ipblocker.config import config
 
 import psycopg2
 import random
+import IPy
 import SubnetTree
 
 #HACK
@@ -257,8 +258,18 @@ def add_dont_block_record(ip, who, comment):
 def get_dont_block_record(ip):
     """Return a record from the dont_block table for this ip, if one exists"""
     t = get_dont_block_subnet_tree()
-    if ip in t:
-        return t[ip]
+    if '/' not in ip:
+        if ip in t:
+            return t[ip]
+        else:
+            return None
+    else:
+        for real_ip in IPy.IP(ip):
+            if str(real_ip) in t:
+                return t[str(real_ip)]
+        return None
+
+
 
 def delete_dont_block_record(id):
     """Remove an ip from the list of don't block records"""

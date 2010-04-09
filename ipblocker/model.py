@@ -27,7 +27,6 @@ from ipblocker.config import config
 import psycopg2
 import random
 import IPy
-import SubnetTree
 
 #HACK
 if sqlalchemy.__version__.startswith("0.5"):
@@ -234,17 +233,14 @@ def list_dont_block_records():
     """Return the list of don't block records"""
     return DontBlock.query.all()
 
-dont_block_tree=None
-def get_dont_block_subnet_tree():
+dont_block_list=None
+def get_dont_block_subnet_list():
     """Return the list of don't block records as a SubnetTree object"""
-    global dont_block_tree
-    if dont_block_tree:
-        return dont_block_tree
-    t = SubnetTree.SubnetTree()
-    for rec in list_dont_block_records():
-        t[rec.ip] = rec
-    dont_block_tree = t
-    return t
+    global dont_block_list
+    if dont_block_list:
+        return dont_block_list
+    dont_block_list = [(IPy.IP(s.ip), s) for s in list_dont_block_records()]
+    return dont_block_list
 
 def add_dont_block_record(ip, who, comment):
     """Add an ip to the list of don't block records"""
@@ -252,24 +248,17 @@ def add_dont_block_record(ip, who, comment):
     b = DontBlock(ip=ip, who=who, comment=comment)
     Session.add(b)
     Session.flush()
-    dont_block_tree = None
+    dont_block_list = None
     return b
 
 def get_dont_block_record(ip):
     """Return a record from the dont_block table for this ip, if one exists"""
-    t = get_dont_block_subnet_tree()
-    if '/' not in ip:
-        if ip in t:
-            return t[ip]
-        else:
-            return None
-    else:
-        for real_ip in IPy.IP(ip):
-            if str(real_ip) in t:
-                return t[str(real_ip)]
-        return None
+    l = get_dont_block_subnet_list()
+    for subnet, rec in l:
+        if subnet.overlaps(ip):
+            return rec
 
-
+    return None
 
 def delete_dont_block_record(id):
     """Remove an ip from the list of don't block records"""

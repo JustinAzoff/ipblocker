@@ -7,10 +7,9 @@
 
 import pynfdump
 
-import datetime
 import sys
-import csv
-import os
+
+import smtplib
 
 from ipblocker import model
 
@@ -24,7 +23,8 @@ def get_report_txt(fn, filter):
     ips={}
     dests=set()
 
-    out = "Traffic to blocked hosts detected:\n\n"
+    out  = "Subject: Traffic to blocked hosts\n\n"
+    out += "Traffic to blocked hosts detected:\n\n"
 
     for rec in result:
         ips.setdefault(rec['srcip'],[]).append(rec)
@@ -47,7 +47,8 @@ def get_report_txt(fn, filter):
 
 def export_file(notify, fn, filter):
     txt = get_report_txt(fn, filter)
-    print txt
+    s = smtplib.SMTP("localhost")
+    s.sendmail("root@datacomm.albany.edu", notify, txt)
 
 def main():
     import sys

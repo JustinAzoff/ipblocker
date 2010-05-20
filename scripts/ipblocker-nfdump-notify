@@ -13,8 +13,6 @@ import smtplib
 
 from ipblocker import model
 
-cols = 'first srcip srcport dstip dstport prot packets bytes flags'.split()
-
 def get_report_txt(fn, filter):
     result = list(pynfdump.search_file(fn, filterfile=filter))
     if not result:
@@ -39,7 +37,7 @@ def get_report_txt(fn, filter):
     for ip,recs in ips.items():
         out += "%s\n" % ip
         for rec in recs:
-            out += " %(first)s %(prot)s %(srcip)s:%(srcport)s -> %(dstip)s:%(dstport)s %(packets)s\n" % rec
+            out += " %(first)s %(prot)s %(srcip)s:%(srcport)s -> %(dstip)s:%(dstport)s %(packets)s %(bytes)s\n" % rec
         out += "\n"
 
     return out

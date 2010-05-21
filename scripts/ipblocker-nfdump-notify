@@ -47,7 +47,7 @@ def get_report_txt(fn, filter):
         out += "%s\n" % ip
         for rec in recs:
             out += " %(first)s %(prot)s %(srcip)s:%(srcport)s -> %(dstip)s:%(dstport)s %(packets)s %(bytes)s\n" % rec
-        out += "\n"
+        out += "\n\n\n"
 
     return out
 

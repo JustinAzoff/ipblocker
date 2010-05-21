@@ -30,7 +30,8 @@ def get_report_txt(fn, filter):
 
     for ip in dests:
         b = model.get_ip(str(ip))[0]
-        out +=  "%-15s %s %s\n" % (ip, b.who, b.comment)
+        blocked_str = b.unblocked and 'Unblocked' or '  Blocked'
+        out +=  "%-15s %s %s %s\n" % (ip, blocked_str, b.who, b.comment)
 
     out += "\n"
 

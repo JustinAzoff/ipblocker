@@ -13,29 +13,37 @@ import smtplib
 
 from ipblocker import model
 
+def unique(data):
+    seen = set()
+    for x in data:
+        if x not in seen:
+            yield x
+            seen.add(x)
+
 def get_report_txt(fn, filter):
     result = list(pynfdump.search_file(fn, filterfile=filter))
     if not result:
         return
 
     ips={}
-    dests=set()
+    dests={}
 
     out  = "Subject: Traffic to blocked hosts\n\n"
     out += "Traffic to blocked hosts detected:\n\n"
 
     for rec in result:
         ips.setdefault(rec['srcip'],[]).append(rec)
-        dests.add(rec['dstip'])
+        ip = str(rec['dstip'])
+        if ip not in dests:
+            b = model.get_ip(ip)[0]
+            blocked_str = b.unblocked and 'not blocked' or 'blocked'
+            dests[ip] = "%-15s | State: %s | %s | %s | %s" % (ip, blocked_str, b.who, b.entered.strftime("%Y-%m-%d"), b.comment)
 
-    for ip in dests:
-        b = model.get_ip(str(ip))[0]
-        blocked_str = b.unblocked and 'Unblocked' or '  Blocked'
-        out +=  "%-15s %s %s %s\n" % (ip, blocked_str, b.who, b.comment)
-
-    out += "\n"
 
     for ip,recs in ips.items():
+        for dst in unique(rec['dstip'] for rec in recs):
+            out += "%s\n" % dests[str(dst)]
+        out += "\n"
         out += "%s\n" % ip
         for rec in recs:
             out += " %(first)s %(prot)s %(srcip)s:%(srcport)s -> %(dstip)s:%(dstport)s %(packets)s %(bytes)s\n" % rec

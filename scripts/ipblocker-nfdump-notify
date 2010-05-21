@@ -54,9 +54,10 @@ def get_report_txt(fn, filter):
 
 def export_file(notify, fn, filter):
     txt = get_report_txt(fn, filter)
-    txt = "To: %s\n%s" % (', '.join(notify), txt)
-    s = smtplib.SMTP("localhost")
-    s.sendmail("root@datacomm.albany.edu", notify, txt)
+    if txt:
+        txt = "To: %s\n%s" % (', '.join(notify), txt)
+        s = smtplib.SMTP("localhost")
+        s.sendmail("root@datacomm.albany.edu", notify, txt)
 
 def main():
     import sys

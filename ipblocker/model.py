@@ -199,8 +199,8 @@ def get_blocked():
     return Block.query.filter(and_(Block.blocked!=None,Block.unblocked==None)).all()
 
 def get_ip(ip):
-    """Return all the block records for this ip"""
-    return Block.query.filter(Block.ip==ip).all()
+    """Return all the block records for this ip, most recent first"""
+    return Block.query.filter(Block.ip==ip).order_by(desc(Block.entered)).all()
 
 def get_blocked_ip(ip):
     """Return a single Blocked IP, or None if it is not currently blocked.

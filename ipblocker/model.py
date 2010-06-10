@@ -16,7 +16,7 @@ import sqlalchemy
 from sqlalchemy import *
 from sqlalchemy.orm import *
 from sqlalchemy.exceptions import SQLError
-from sqlalchemy.databases.postgres import PGInet
+from sqlalchemy.dialects.postgresql import INET
 import sqlalchemy.types as sqltypes
 import ConfigParser
 
@@ -29,10 +29,10 @@ import random
 import IPy
 
 #HACK
-if sqlalchemy.__version__.startswith("0.5"):
-    kwargs = {'autocommit': True}
-else:
+if sqlalchemy.__version__.startswith("0.4"):
     kwargs = {'transactional': False}
+else:
+    kwargs = {'autocommit': True}
 dburi = config.get("db","uri")
 engine = create_engine(dburi)
 Session = scoped_session(sessionmaker(autoflush=True, bind=engine, **kwargs))
@@ -71,7 +71,7 @@ class DontBlockException(Exception):
 
 blocks = Table('blocks', metadata,
     Column('id',        Integer, primary_key=True),
-    Column('ip',        PGInet, index=True),
+    Column('ip',        INET, index=True),
     Column('who',       String(50), nullable=False),
     Column('comment',   String, nullable=False),
     Column('entered',   DateTime, default=datetime.datetime.now),
@@ -84,14 +84,14 @@ blocks = Table('blocks', metadata,
 
 dont_block = Table('dont_block', metadata,
     Column('id',        Integer, primary_key=True),
-    Column('ip',        PGInet, index=True),
+    Column('ip',        INET, index=True),
     Column('who',       String(50), nullable=False),
     Column('comment',   String, nullable=False),
     Column('entered',   DateTime, default=datetime.datetime.now),
 )
 
 fishy = Table('fishy', metadata,
-    Column('ip',        PGInet, index=True, primary_key=True),
+    Column('ip',        INET, index=True, primary_key=True),
     Column('comment',   String, nullable=False),
     Column('entered',   DateTime, default=datetime.datetime.now),
 )

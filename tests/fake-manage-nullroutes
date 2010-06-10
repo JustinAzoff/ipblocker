@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 from ipblocker import model
 from ipblocker import fake_ciscolib

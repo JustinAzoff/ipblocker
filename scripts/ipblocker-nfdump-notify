@@ -28,8 +28,7 @@ def get_report_txt(fn, filter):
     ips={}
     dests={}
 
-    out  = "Subject: Traffic to blocked hosts\n\n"
-    out += "Traffic to blocked hosts detected:\n\n"
+    whos = set()
 
     for rec in result:
         ips.setdefault(rec['srcip'],[]).append(rec)
@@ -38,7 +37,10 @@ def get_report_txt(fn, filter):
             b = model.get_ip(ip)[0]
             blocked_str = b.unblocked and 'not blocked' or 'blocked'
             dests[ip] = "%-15s | State: %s | %s | %s | %s" % (ip, blocked_str, b.who, b.entered.strftime("%Y-%m-%d"), b.comment)
+            whos.add(b.who)
 
+    out  = "Subject: Traffic to blocked hosts (%s)\n\n" % (','.join(whos))
+    out += "Traffic to blocked hosts detected:\n\n"
 
     for ip,recs in ips.items():
         for dst in unique(rec['dstip'] for rec in recs):

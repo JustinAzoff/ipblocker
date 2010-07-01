@@ -49,7 +49,7 @@ class Manager:
         if not to_unblock:
             return
 
-        for batch in util.window(to_unblock.keys(), 50):
+        for batch in util.window(to_unblock.keys(), 250):
             c.nullroute_remove_many(batch)
         current = set(c.nullroute_list())
 
@@ -81,7 +81,7 @@ class Manager:
         if not to_block:
             return
 
-        for batch in util.window(to_block.keys(), 50):
+        for batch in util.window(to_block.keys(), 250):
             c.nullroute_add_many(batch)
         current = set(c.nullroute_list())
 

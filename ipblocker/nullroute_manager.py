@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from ipblocker import logger, config
+from ipblocker import logger, config, util
 import time
 from ipblocker.notify import notify_block
 
@@ -49,7 +49,8 @@ class Manager:
         if not to_unblock:
             return
 
-        c.nullroute_remove_many(to_unblock.keys())
+        for batch in util.window(to_unblock.keys(), 50):
+            c.nullroute_remove_many(batch)
         current = set(c.nullroute_list())
 
         for b in to_unblock.values():
@@ -80,7 +81,8 @@ class Manager:
         if not to_block:
             return
 
-        c.nullroute_add_many(to_block.keys())
+        for batch in util.window(to_block.keys(), 50):
+            c.nullroute_add_many(batch)
         current = set(c.nullroute_list())
 
         for b in to_block.values():

@@ -62,3 +62,23 @@ def wakeup_backend():
     host = db_config.pop('host').split(',')[0]
     return tcpsleep.client.wakeup(host=host, port=11112)
 
+
+def window(d,slice=5):
+    """Generate sublists from a real list
+
+        >>> list(window(range(10),11))
+        [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]]
+        >>> list(window(range(10),9))
+        [[0, 1, 2, 3, 4, 5, 6, 7, 8], [9]]
+        >>> list(window(range(10),5))
+        [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]
+        >>> list(window(range(10),3))
+        [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9]]
+        >>> list(window(range(10),1))
+        [[0], [1], [2], [3], [4], [5], [6], [7], [8], [9]]
+
+    """
+    for x in xrange(0,len(d),slice):
+        a=x
+        b=x+slice
+        yield d[a:b]

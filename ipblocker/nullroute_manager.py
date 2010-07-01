@@ -40,20 +40,18 @@ class Manager:
         current = set(c.nullroute_list())
         to_unblock = {}
         for b in unblock_pending:
-            to_unblock[IP(b.ip)] = b
             if IP(b.ip) not in current:
-                logger.warning("already unblocked %s, unblocking anyway" % b.ip)
+                logger.warning("already unblocked %s" % b.ip)
             else:
                 logger.info("unblocking %s (%s)" % (b.ip, b.who))
+                to_unblock[IP(b.ip)] = b
 
-        if not to_unblock:
-            return
+        if to_unblock:
+            for batch in util.window(to_unblock.keys(), 250):
+                c.nullroute_remove_many(batch)
+            current = set(c.nullroute_list())
 
-        for batch in util.window(to_unblock.keys(), 250):
-            c.nullroute_remove_many(batch)
-        current = set(c.nullroute_list())
-
-        for b in to_unblock.values():
+        for b in unblock_pending:
             if IP(b.ip) not in current:
                 b.set_unblocked()
             else:
@@ -71,21 +69,19 @@ class Manager:
         current = set(c.nullroute_list())
         to_block = {}
         for b in block_pending:
-            to_block[IP(b.ip)] = b
-            if IP(b.ip) not in current:
-                logger.info("blocking %s (%s)" % (b.ip, b.who))
-                notify_block(b)
+            if IP(b.ip) in current:
+                logger.warning("already blocked %s" % b.ip)
             else:
-                logger.warning("already blocked %s, blocking anyway" % b.ip)
+                logger.info("blocking %s (%s)" % (b.ip, b.who))
+                to_block[IP(b.ip)] = b
+                notify_block(b)
 
-        if not to_block:
-            return
+        if to_block:
+            for batch in util.window(to_block.keys(), 250):
+                c.nullroute_add_many(batch)
+            current = set(c.nullroute_list())
 
-        for batch in util.window(to_block.keys(), 250):
-            c.nullroute_add_many(batch)
-        current = set(c.nullroute_list())
-
-        for b in to_block.values():
+        for b in block_pending:
             if IP(b.ip) in current:
                 b.set_blocked()
             else:

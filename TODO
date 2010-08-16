@@ -1,0 +1,18 @@
+* Documentation
+* * Update inline API documentation
+* * Update install guide
+* * Test installation on clean system
+
+* code clean ups
+* * Make sure dead/unused code is deleted
+* * Clean up license/copyright information
+
+* General development
+* * Re-write snort blocker to be more flexible
+* * * real-time event->block mode
+* * * in addition to the existing scan threshold mode
+* * Re-work how IP addresses are stored in order to support other databases
+* * Split out the various feed source parsing logic into a separate project
+
+* Source control
+* * Move ipblocker project to external code hosting.

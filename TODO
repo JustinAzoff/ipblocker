@@ -1,18 +1,18 @@
 * Documentation
-* * Update inline API documentation
-* * Update install guide
-* * Test installation on clean system
+* * Update inline API documentation - 2hr
+* * Update install guide - 1hr
+* * Test installation on a clean system - 1hr-3hr - pending any issues come up
 
-* code clean ups
-* * Make sure dead/unused code is deleted
-* * Clean up license/copyright information
+* Code clean ups
+* * Make sure dead/unused code is deleted - 1hr
+* * Clean up license/copyright information - 30m
 
 * General development
 * * Re-write snort blocker to be more flexible
-* * * real-time event->block mode
+* * * real-time event->block mode - 2hr
 * * * in addition to the existing scan threshold mode
-* * Re-work how IP addresses are stored in order to support other databases
-* * Split out the various feed source parsing logic into a separate project
+* * Re-work how IP addresses are stored in order to support other databases - 3hr
+* * Split out the various feed source parsing logic into a separate project - 1hr
 
 * Source control
-* * Move ipblocker project to external code hosting.
+* * Move ipblocker project to external code hosting - 2hr

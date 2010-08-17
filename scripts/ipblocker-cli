@@ -42,9 +42,10 @@ class ipbcli(Cmd):
     def complete_ip(self, text, line, begidx, endidx):
         return [b.ip for b in self._get_all_that_should_be_blocked() if str(b.ip).startswith(text)]
 
-    complete_show   = complete_ip
-    complete_detail = complete_ip
-    complete_unflag = complete_ip
+    complete_show    = complete_ip
+    complete_detail  = complete_ip
+    complete_unflag  = complete_ip
+    complete_unblock = complete_ip
 
     def do_show(self, ip):
         """Show a summary for this ip"""
@@ -71,6 +72,12 @@ class ipbcli(Cmd):
                 b.flag_traffic=False
             print
         model.Session.flush()
+
+    def do_unblock(self, ip):
+        """Unblock an IP"""
+        print 'unblocking'
+        self.do_show(ip)
+        model.unblock_ip(ip)
 
     def do_EOF(self, x):
         sys.exit(0)

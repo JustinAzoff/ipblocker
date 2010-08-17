@@ -1,0 +1,87 @@
+#!/usr/bin/env python
+
+from ipblocker import model
+from cmd import Cmd
+import sys
+import time
+
+class ipbcli(Cmd):
+    prompt = "IPBlocker> "
+
+    def __init__(self):
+        Cmd.__init__(self)
+        self.model_cache = None
+        self.last_cache_time = None
+
+    def _get_all_that_should_be_blocked(self):
+        """Cache the list of blocked hosts from the model
+           this is used for completion so it will save round trips to the DB
+        """
+        if self.last_cache_time and time.time() - self.last_cache_time < 5:
+            return self.model_cache
+
+        self.model_cache = model.get_all_that_should_be_blocked()
+        self.last_cache_time = time.time()
+        return self.model_cache
+
+    def do_pending(self, x):
+        """List pending blocks and unblocks"""
+        pending = model.get_block_pending()
+        if pending:
+            print "Block Pending"
+            for b in pending:
+                print b.ip
+
+        pending = model.get_unblock_pending()
+        if pending:
+            print
+            print "UnBlock Pending"
+            for b in pending:
+                print b.ip
+
+    def complete_ip(self, text, line, begidx, endidx):
+        return [b.ip for b in self._get_all_that_should_be_blocked() if str(b.ip).startswith(text)]
+
+    complete_show   = complete_ip
+    complete_detail = complete_ip
+    complete_unflag = complete_ip
+
+    def do_show(self, ip):
+        """Show a summary for this ip"""
+        records = model.get_ip(ip)
+        for b in records:
+            print self._fmt_block(b)
+
+    def do_detail(self, ip):
+        """Show the detailed information for this ip"""
+        records = model.get_ip(ip)
+        if not records:
+            return
+        for b in records:
+            print self._fmt_block(b)
+            print b.comment
+            print
+            
+    def do_unflag(self, line):
+        """Unflag each ip present on the line"""
+        for ip in line.split():
+            print ip
+            for b in model.get_ip(ip):
+                print self._fmt_block(b)
+                b.flag_traffic=False
+            print
+        model.Session.flush()
+
+    def do_EOF(self, x):
+        sys.exit(0)
+
+    def _fmt_block(self, b):
+        blocked_str = b.unblocked and 'not blocked' or 'blocked'
+        return "%-15s | State: %s | %s | %s" % (b.ip, blocked_str, b.who, b.entered.strftime("%Y-%m-%d"))
+
+if __name__ == "__main__":
+    c = ipbcli()
+    if len(sys.argv) > 1:
+        c.onecmd(' '.join(sys.argv[1:]))
+    else:
+        c.cmdloop()

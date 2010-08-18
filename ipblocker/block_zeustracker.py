@@ -34,6 +34,12 @@ class ZeusBlocker(SourceBlocker):
     def serialize_record(self, record):
         return "zeusbot C&Cs"
 
-if __name__ == "__main__":
+def get_records():
+    return ZeusBlocker(None).get_records()
+
+def main():
     b = ZeusBlocker(model)
     b.block()
+
+if __name__ == "__main__":
+    main()

@@ -29,6 +29,12 @@ class SHBlocker(SourceBlocker):
     def serialize_record(self, record):
         return "on the spamhaus drop list - %s" % record['comment']
 
-if __name__ == "__main__":
+def get_records():
+    return SHBlocker(None).get_records()
+
+def main():
     b = SHBlocker(model)
     b.block()
+
+if __name__ == "__main__":
+    main()

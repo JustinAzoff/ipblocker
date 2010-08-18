@@ -26,10 +26,15 @@ setup(name='ipblocker',
         "pysubnettree",
         # -*- Extra requirements: -*-
     ],
-    entry_points="""
-    [paste.app_install]
-    main = paste.script.appinstall:Installer
-    """,
+    entry_points= {
+        'paste.app_install': [
+            'main   = paste.script.appinstall:Installer',
+        ],
+        'console_scripts': [
+            'ipblocker-block-spamhaus     = ipblocker.block_spamhaus:main',
+            'ipblocker-block-zeustracker  = ipblocker.block_zeustracker:main',
+        ]
+    },
     test_suite='nose.collector',
     scripts=glob('scripts/*'),
     )

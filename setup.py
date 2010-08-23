@@ -20,6 +20,7 @@ setup(name='ipblocker',
     zip_safe=False,
     install_requires=[
         "SQLAlchemy >= 0.4",
+        "httplib2",
         "WebHelpers",
         "cisco",
         "tcpsleep",

@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-from ipblocker import model
+from ipblocker import model, util
 from cmd import Cmd
 import sys
+import os
 import time
 
 class ipbcli(Cmd):
@@ -78,6 +79,24 @@ class ipbcli(Cmd):
         print 'unblocking'
         self.do_show(ip)
         model.unblock_ip(ip)
+
+    def do_block(self, line):
+        """Block an IP Address
+        Usage: block ip duration comment"""
+
+        user = os.getenv("USER")
+        parts = line.split(None, 2)
+        if len(parts)!=3:
+            print "Wrong number of arguments"
+            print "Usage: block ip duration comment"
+            return
+        ip, duration, comment = parts
+        duration = int(duration)
+        model.block_ip(ip=ip, who=user, comment=comment, duration=duration, flag_traffic=True)
+        if model.get_block_pending():
+            util.wakeup_backend()
+        self.do_show(ip)
+
 
     def do_EOF(self, x):
         sys.exit(0)

@@ -35,7 +35,7 @@ Test cisco library
 ::
 
     (ipblocker_env)ipblocker$ python
-    >>> from cisco.ciscolib import login
+    >>> from cisco import login
     >>> c = login("router_ip")
     >>> c is not None
     True

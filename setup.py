@@ -23,7 +23,6 @@ setup(name='ipblocker',
         "WebHelpers",
         "cisco",
         "tcpsleep",
-        "pysubnettree",
         # -*- Extra requirements: -*-
     ],
     entry_points= {

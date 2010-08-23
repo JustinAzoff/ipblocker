@@ -21,6 +21,7 @@ import sqlalchemy.types as sqltypes
 import ConfigParser
 
 import datetime
+import time
 
 from ipblocker.config import config
 
@@ -233,18 +234,18 @@ def list_dont_block_records():
     """Return the list of don't block records"""
     return DontBlock.query.all()
 
-dont_block_list=None
+cache = {}
 def get_dont_block_subnet_list():
-    """Return the list of don't block records as a SubnetTree object"""
-    global dont_block_list
-    if dont_block_list:
-        return dont_block_list
+    """Return the list of don't block records"""
+    global cache
+    if 'dont_block_list' in cache and time.time() - cache['dont_block_list'][0] < 5:
+        return cache['dont_block_list'][1]
     dont_block_list = [(IPy.IP(s.ip), s) for s in list_dont_block_records()]
+    cache['dont_block_list'] = (time.time(), dont_block_list)
     return dont_block_list
 
 def add_dont_block_record(ip, who, comment):
     """Add an ip to the list of don't block records"""
-    global dont_block_tree
     b = DontBlock(ip=ip, who=who, comment=comment)
     Session.add(b)
     Session.flush()

@@ -33,12 +33,15 @@ class ipbcli(Cmd):
             for b in pending:
                 print b.ip
 
-        pending = model.get_unblock_pending()
-        if pending:
+        upending = model.get_unblock_pending()
+        if upending:
             print
             print "UnBlock Pending"
-            for b in pending:
+            for b in upending:
                 print b.ip
+
+        if pending or upending:
+            util.wakeup_backend()
 
     def do_list(self, line):
         """List all of the blocked hosts"""

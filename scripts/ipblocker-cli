@@ -40,6 +40,11 @@ class ipbcli(Cmd):
             for b in pending:
                 print b.ip
 
+    def do_list(self, line):
+        """List all of the blocked hosts"""
+        for b in model.get_all_that_should_be_blocked():
+            print b.ip, b.who, b.entered.strftime("%Y-%m-%d"), repr(b.comment)[:60]
+
     def complete_ip(self, text, line, begidx, endidx):
         return [b.ip for b in self._get_all_that_should_be_blocked() if str(b.ip).startswith(text)]
 

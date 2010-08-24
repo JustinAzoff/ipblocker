@@ -91,7 +91,7 @@ class ipbcli(Cmd):
             print "Usage: block ip duration comment"
             return
         ip, duration, comment = parts
-        duration = int(duration)
+        duration = util.expand_time(duration)
         model.block_ip(ip=ip, who=user, comment=comment, duration=duration, flag_traffic=True)
         if model.get_block_pending():
             util.wakeup_backend()

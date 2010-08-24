@@ -36,3 +36,22 @@ def test_ip_summary_simple():
     assert info['num_flows'] == 5
     assert info['num_subnets'] == 3
     assert info['stop_flows'] == []
+
+def test_expand_time():
+    data = [
+        ('10',      10),
+        ('10s',     10),
+        ('7m',      7*60),
+        ('14m',     14*60),
+        ('4h',      4*60*60),
+        ('22h',     22*60*60),
+        ('3d',      3*60*60*24),
+        ('3mo',     3*60*60*24*30),
+        ('2y',      2*60*60*24*365),
+    ]
+
+    for text, number in data:
+        yield expand_time_case, text, number
+
+def expand_time_case(text, number):
+    assert util.expand_time(text) == number 

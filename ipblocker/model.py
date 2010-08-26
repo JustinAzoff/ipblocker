@@ -24,6 +24,7 @@ import datetime
 import time
 
 from ipblocker.config import config
+from ipblocker import util
 
 import psycopg2
 import random
@@ -306,6 +307,7 @@ def block_ip(ip, who, comment, duration, flag_traffic=False, extend_only=False):
     if ex:
         raise DontBlockException(ex.ip, ex.who, ex.comment)
 
+    duration = util.expand_time(duration)
     now = datetime.datetime.now()
     diff = datetime.timedelta(seconds=duration)
     unblock_at = now + diff

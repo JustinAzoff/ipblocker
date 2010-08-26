@@ -2,29 +2,18 @@
 from snort import snortdb
 from ipblocker import block_ip, get_blocked_ip, is_reblockable, is_fishy, get_block_pending, disconnect
 from ipblocker import logger
+from ipblocker import config
 import os
 from ipblocker.util import groupby, subnet, wakeup_backend
 from operator import itemgetter
 
 import datetime
 
-#TODO: put in config file
-sigs = [
-    'ET SCAN LibSSH Based Frequent SSH Connections Likely BruteForce Attack',
-    'ET SCAN LibSSH Based SSH Connection',
-    'ET SCAN Potential SSH Scan',
-    'VNC Scan 5900-5920',
-    'ET EXPLOIT RealVNC Authentication Bypass Attempt',
-    'ET SCAN MYSQL 4.1 brute force root login attempt', 
-    'ET SCAN Behavioral Unusually fast Terminal Server Traffic, Potential Scan or Infection',
-    'ET SCAN Tomcat Auth Brute Force attempt',
-    'ET WEB_SERVER PHP Attack Tool Morfeus',
-    'ET SCAN Sipvicious Scan',
-]
-MINIMUM = 32
-SUBNET_MINIMUM = 3
 
-BLOCK_TIME = 60*60*24*7
+sigs            = config.get("snort", "sigs").strip().splitlines()
+MINIMUM         = config.get("snort", "minimum")
+SUBNET_MINIMUM  = config.get("snort", "subnet_minimum")
+BLOCK_TIME      = config.get("snort", "block_time")
 
 def num_subnets(alerts):
     by_dst = groupby(alerts, lambda a: subnet(a['ip_dst']))

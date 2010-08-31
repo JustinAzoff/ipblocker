@@ -15,15 +15,27 @@ class SourceBlocker:
         self.model = model
 
     def get_records(self):
+        """Return a list of block records.  This can be something like a list of IPs,
+        a list of dicts, or a list of objects
+        The most common case is a list of dicts where the IP address is in the 'ip' key
+        """
         raise NotImplementedError("Not implemented")
 
     def get_ip_from_record(self, record):
+        """Return just the IP address to block from a record.  If the records are a
+        plain list of IP addresses, this should simply return record"""
+
         return record['ip']
 
     def serialize_record(self, record):
+        """Return a textual representation from a block record.  This is what will be
+        used as the comment in the database"""
         return simplejson.dumps(record)
 
     def block(self):
+        """call get_records() and block each record returned.  If must_exist_in_source
+        is True, unblock any addresses that were previously blocked, but are no longer
+        in the source"""
         all = self.get_records()
         logger.debug("Got %d ips" % len(all))
         all_ips = set(self.get_ip_from_record(r) for r in all)

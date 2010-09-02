@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from ipblocker import model
-from cisco import ciscossh
+from cisco import cisco_login
 from ipblocker.config import config
 
 from ipblocker.nullroute_manager import Manager
@@ -9,7 +9,7 @@ from ipblocker.nullroute_manager import Manager
 IP = config.get("nullrouter","ip")
 
 def main():
-    m = Manager(IP, model, ciscossh)
+    m = Manager(IP, model, cisco_login)
     m.manage()
 
 if __name__ == "__main__":

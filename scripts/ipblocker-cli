@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
-from ipblocker import model, util
+from ipblocker import model, util, config
 from cmd import Cmd
 import sys
 import os
 import time
+
+from ipblocker import nullroute_audit
 
 class ipbcli(Cmd):
     prompt = "IPBlocker> "
@@ -103,6 +105,23 @@ class ipbcli(Cmd):
         if model.get_block_pending():
             util.wakeup_backend()
         self.do_show(ip)
+
+    def do_audit_nullroutes(self, line):
+        """Audit the nullroute block list.  Show any hosts that should be blocked but aren't, and vice versa"""
+        import cisco
+        IP = config.get("nullrouter","ip")
+        a = nullroute_audit.Auditor(IP, model, cisco)
+        not_blocked, blocked = a.audit()
+        if not_blocked:
+            print "Hosts that should be blocked but are not:"
+            for x in not_blocked:
+                print self._fmt_block(b)
+        if not_blocked and blocked:
+            print
+        if blocked:
+            print "Hosts that should not be blocked but are:"
+            for x in blocked:
+                print x
 
 
     def do_EOF(self, x):

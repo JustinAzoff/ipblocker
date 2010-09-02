@@ -2,7 +2,7 @@
 from snort import snortdb
 from ipblocker import block_ip, get_blocked_ip, is_reblockable, is_fishy, get_block_pending, disconnect
 from ipblocker import logger
-from ipblocker import config
+from ipblocker.config import config
 import os
 from ipblocker.util import groupby, subnet, wakeup_backend
 from operator import itemgetter

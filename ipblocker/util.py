@@ -1,4 +1,4 @@
-from ipblocker import config
+from ipblocker.config import config
 def groupby(it, keyfunc):
     """Like itertools.groupby, but don't require a sorted list"""
     ret = {}
@@ -58,8 +58,7 @@ def ip_summary(flows):
 
 def wakeup_backend():
     import tcpsleep
-    db_config = dict(config.items('db'))
-    host = db_config.pop('host').split(',')[0]
+    host = config.get('db','host')
     return tcpsleep.client.wakeup(host=host, port=11112)
 
 

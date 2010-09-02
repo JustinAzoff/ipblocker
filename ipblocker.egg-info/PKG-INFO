@@ -1,10 +1,14 @@
 Metadata-Version: 1.0
 Name: ipblocker
-Version: 0.1dev-r5238
+Version: 0.6
 Summary: IP Blocker
 Home-page: UNKNOWN
 Author: Justin Azoff
 Author-email: JAzoff@uamail.albany.edu
 License: MIT
 Description: UNKNOWN
+Keywords: ip block null route
 Platform: UNKNOWN
+Classifier: Topic :: System :: Networking
+Classifier: Topic :: Security
+Classifier: Topic :: System :: Networking :: Firewalls

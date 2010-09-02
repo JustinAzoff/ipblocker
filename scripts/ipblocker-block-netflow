@@ -68,7 +68,7 @@ def block(ip, data, rec, force_block=False):
 
     block_record = get_blocked_ip(ip)
 
-    if not block_record and not force_block:
+    if not should_block(ip) and not block_record and not force_block:
         print txt
         confirm = raw_input("Block %s ? [type 'yes'] " % ip)
         if confirm != 'yes':

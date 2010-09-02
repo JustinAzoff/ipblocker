@@ -8,20 +8,35 @@ Add ipblocker user
 
     root# adduser --disabled-password ipblocker
 
-Install everything
+Install dependencies
 ------------------
 .. code-block:: bash
 
     root# apt-get install python-{setuptools,virtualenv,psycopg2,httplib2,simplejson,paramiko,geoip} postgresql-8.3 timeout
+
+Create database
+---------------
+.. code-block:: bash
+
+    root@ su - postgres
+    postgres$ createuser -S -D -R  -P ipblocker
+    Enter password for new role:
+    Enter it again:
+    postgres$ createdb -O ipblocker ipblocker
+    postgres$ exit
+
+Install IPBlocker
+-----------------
+.. code-block:: bash
+
     root# su - ipblocker
     ipblocker$ virtualenv ipblocker_env
     ipblocker$ . ipblocker_env/bin/activate
     (ipblocker_env)ipblocker$ easy_install -f . ipblocker snort pynfdump
 
-
 Setup cisco library
 -------------------
-::
+.. code-block:: bash
 
     ipblocker$ mkdir ~/.cisco
     ipblocker$ touch ~/.cisco/credentials
@@ -41,6 +56,7 @@ Test cisco library
     True
     >>> print c.nullroute_list()
     [list of current nullrouted IPS]
+    >>> [Control-d]
 
 
 Make the initial ipblocker cfg file
@@ -51,23 +67,15 @@ Make the initial ipblocker cfg file
     ipblocker$ chmod 600 ipblocker.cfg
     ipblocker$ vim ipblocker.cfg #edit database and other passwords
 
-Create database
----------------
-.. code-block:: bash
-
-    root@ su - postgres
-    postgres$ createuser -S -D -R  -P ipblocker
-    Enter password for new role:
-    Enter it again:
-    postgres$ createdb -O ipblocker ipblocker
 
 Create the tables
-~~~~~~~~~~~~~~~~~
-::
+-----------------
+.. code-block:: python
 
     ipblocker$ python
     >>> from ipblocker import model
     >>> model.metadata.create_all()
+    >>> [Control-d]
 
 Test database
 -------------
@@ -80,15 +88,17 @@ Test database
 Block stuff
 -----------
 
-Block ren-isac list
+Block ZuesTracker block list
 ~~~~~~~~~~~~~~~~~~~
 .. code-block:: bash
 
-    (ipblocker_env)ipblocker$ ipblocker-block-ren-isac 
-    2009-01-29 14:38:00,368 - ipblocker - DEBUG - Fetching IP list from ren-isac
-    2009-01-29 14:38:01,402 - ipblocker - DEBUG - Got 453 ips
-    2009-01-29 14:38:01,435 - ipblocker - DEBUG - DB-blocking 11.22.33.44
-    2009-01-29 14:38:01,447 - ipblocker - DEBUG - DB-blocking 55.66.77.88
+    (ipblocker_env)ipblocker$ ipblocker-block-zeus-tracker
+
+    2010-09-02 17:30:35,652 - ipblocker - DEBUG - Fetching IP list from the zeus tracker
+    2010-09-02 17:30:36,707 - ipblocker - DEBUG - removed 89 US ips
+    2010-09-02 17:30:36,719 - ipblocker - DEBUG - Got 338 ips
+    2010-09-02 17:30:37,327 - ipblocker - DEBUG - DB-blocking 109.104.92.192
+    2010-09-02 17:30:37,498 - ipblocker - DEBUG - DB-blocking 109.196.130.43
     ...
 
 Implement the blocks
@@ -96,12 +106,27 @@ Implement the blocks
 .. code-block:: bash
 
     (ipblocker_env)ipblocker$ ipblocker-manage-nullroutes
-    2009-01-29 14:41:21,940 - ipblocker - DEBUG - Logging into router
-    2009-01-29 14:41:22,172 - ipblocker - DEBUG - Done logging into router
-    2009-01-29 14:41:22,230 - ipblocker - INFO - blocking 11.22.33.44 (ren-isac)
-    2009-01-29 14:41:22,230 - ipblocker - INFO - blocking 55.66.77.88 (ren-isac)
+
+    2010-09-02 17:35:58,641 - ipblocker - DEBUG - Logging into router
+    2010-09-02 17:35:58,912 - ipblocker - DEBUG - Done logging into router
+    2010-09-02 17:36:01,586 - ipblocker - INFO - blocking 109.104.92.192 (zeus)
+    2010-09-02 17:36:01,586 - ipblocker - INFO - blocking 109.196.130.43 (zeus)
     ...
-    2009-01-29 14:42:00,187 - ipblocker - DEBUG - Logging out of router
+    2010-09-02 17:36:28,020 - ipblocker - DEBUG - Logging out of router
+
+Test CLI
+--------
+.. code-block:: bash
+
+    (ipblocker_env)ipblocker$ ipblocker-cli show 109.104.92.192
+    109.104.92.192  | State: blocked | zeus | 2010-09-02
+
+    #or
+
+    (ipblocker_env)ipblocker$ ipblocker-cli
+    IPBlocker> show 109.104.92.192
+    109.104.92.192  | State: blocked | zeus | 2010-09-02
+    IPBlocker> [Control-d]
 
 
 
@@ -112,5 +137,5 @@ Setup Crontab
     PATH=/bin:/usr/bin:/home/ipblocker/ipblocker_env/bin
     # m h  dom mon dow   command
     * * * * * timeout 200 ipblocker-manage-nullroutes
-    0 * * * * sleep 20;timeout 600 ipblocker-block-ren-isac > /dev/null
+    0 * * * * sleep 20;timeout 600 ipblocker-block-zeustracker > /dev/null
     #* * * * * sleep 45;timeout 100 ipblocker-block-snort > /dev/null

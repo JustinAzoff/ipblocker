@@ -31,6 +31,7 @@ clean:
 
 html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) _build/html
+	cp example.cfg _build/html
 	@echo
 	@echo "Build finished. The HTML pages are in _build/html."
 

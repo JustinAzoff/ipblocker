@@ -9,7 +9,7 @@ Add ipblocker user
     root# adduser --disabled-password ipblocker
 
 Install dependencies
-------------------
+--------------------
 .. code-block:: bash
 
     root# apt-get install python-{setuptools,virtualenv,psycopg2,httplib2,simplejson,paramiko,geoip} postgresql-8.3 timeout
@@ -61,6 +61,10 @@ Test cisco library
 
 Make the initial ipblocker cfg file
 -----------------------------------
+Using the example.cfg_
+
+.. _example.cfg: example.cfg
+
 .. code-block:: bash
 
     ipblocker$ cp docs/example.cfg ~/ipblocker.cfg #or /etc/ipblocker/ipblocker.cfg
@@ -89,7 +93,7 @@ Block stuff
 -----------
 
 Block ZuesTracker block list
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. code-block:: bash
 
     (ipblocker_env)ipblocker$ ipblocker-block-zeus-tracker

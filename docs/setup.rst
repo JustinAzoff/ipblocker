@@ -57,6 +57,8 @@ Create database
 
     root@ su - postgres
     postgres$ createuser -S -D -R  -P ipblocker
+    Enter password for new role:
+    Enter it again:
     postgres$ createdb -O ipblocker ipblocker
 
 Create the tables

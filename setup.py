@@ -2,15 +2,15 @@ from setuptools import setup, find_packages
 import sys, os
 from glob import glob
 
-version = '0.5'
+version = '0.6'
 
 setup(name='ipblocker',
     version=version,
     description="IP Blocker",
     long_description="""\
 """,
-    classifiers=[], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
-    keywords='',
+    classifiers=["Topic :: System :: Networking", "Topic :: Security", "Topic :: System :: Networking :: Firewalls"],
+    keywords='ip block null route',
     author='Justin Azoff',
     author_email='JAzoff@uamail.albany.edu',
     url='',

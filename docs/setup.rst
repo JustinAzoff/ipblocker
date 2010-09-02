@@ -76,7 +76,7 @@ Create the tables
 -----------------
 .. code-block:: python
 
-    ipblocker$ python
+    (ipblocker_env)ipblocker$ python
     >>> from ipblocker import model
     >>> model.metadata.create_all()
     >>> [Control-d]

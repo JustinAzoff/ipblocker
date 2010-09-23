@@ -11,8 +11,8 @@ import datetime
 
 
 sigs            = config.get("snort", "sigs").strip().splitlines()
-MINIMUM         = config.get("snort", "minimum")
-SUBNET_MINIMUM  = config.get("snort", "subnet_minimum")
+MINIMUM         = int(config.get("snort", "minimum"))
+SUBNET_MINIMUM  = int(config.get("snort", "subnet_minimum"))
 BLOCK_TIME      = config.get("snort", "block_time")
 
 def num_subnets(alerts):

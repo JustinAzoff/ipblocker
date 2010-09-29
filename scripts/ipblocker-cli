@@ -114,14 +114,14 @@ class ipbcli(Cmd):
         not_blocked, blocked = a.audit()
         if not_blocked:
             print "Hosts that should be blocked but are not:"
-            for x in not_blocked:
+            for b in not_blocked:
                 print self._fmt_block(b)
         if not_blocked and blocked:
             print
         if blocked:
             print "Hosts that should not be blocked but are:"
-            for x in blocked:
-                print x
+            for b in blocked:
+                print b
 
 
     def do_EOF(self, x):

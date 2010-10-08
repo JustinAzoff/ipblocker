@@ -96,7 +96,7 @@ Block ZuesTracker block list
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. code-block:: bash
 
-    (ipblocker_env)ipblocker$ ipblocker-block-zeus-tracker
+    (ipblocker_env)ipblocker$ ipblocker-block-zeustracker
 
     2010-09-02 17:30:35,652 - ipblocker - DEBUG - Fetching IP list from the zeus tracker
     2010-09-02 17:30:36,707 - ipblocker - DEBUG - removed 89 US ips

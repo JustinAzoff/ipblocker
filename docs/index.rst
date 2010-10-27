@@ -15,6 +15,7 @@ Contents:
     example_session
     setup
     model
+    links
 
 
 Indices and tables

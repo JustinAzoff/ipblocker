@@ -32,7 +32,7 @@ Install IPBlocker
     root# su - ipblocker
     ipblocker$ virtualenv ipblocker_env
     ipblocker$ . ipblocker_env/bin/activate
-    (ipblocker_env)ipblocker$ easy_install -f . ipblocker snort pynfdump
+    (ipblocker_env)ipblocker$ easy_install -f http://www.albany.edu/~ja6447/ipblocker/ ipblocker snort pynfdump
 
 Setup cisco library
 -------------------

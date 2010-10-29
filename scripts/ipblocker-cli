@@ -123,6 +123,17 @@ class ipbcli(Cmd):
             for b in blocked:
                 print b
 
+    def do_test_cisco_router_acces(self, line):
+        import cisco
+        IP = config.get("nullrouter","ip")
+        print "Attempting to login to", IP
+        c = cisco.login(IP)
+        if c:
+            print "Login Successful"
+            print "Currently null-routing %d addresses" % len(c.nullroute_list())
+            c.logout()
+        else:
+            print "Login Failed"
 
     def do_EOF(self, x):
         sys.exit(0)

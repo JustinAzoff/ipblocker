@@ -41,7 +41,7 @@ Setup cisco library
     ipblocker$ mkdir ~/.cisco
     ipblocker$ touch ~/.cisco/credentials
     ipblocker$ chmod 600 ~/.cisco/credentials
-    ipblocker$ edit ~/.cisco/credentials
+    ipblocker$ editor ~/.cisco/credentials
     #add tab deliminated
     username        password        enablepassword
 
@@ -69,7 +69,7 @@ Using the example.cfg_
 
     ipblocker$ cp docs/example.cfg ~/ipblocker.cfg #or /etc/ipblocker/ipblocker.cfg
     ipblocker$ chmod 600 ipblocker.cfg
-    ipblocker$ vim ipblocker.cfg #edit database and other passwords
+    ipblocker$ editor ipblocker.cfg #edit database and other passwords
 
 
 Create the tables

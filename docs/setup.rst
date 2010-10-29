@@ -16,6 +16,10 @@ Install dependencies
 
 Create database
 ---------------
+
+Create the ipblocker database, and ipblocker username and password.  You will
+need to add this password to the configuration file later on.
+
 .. code-block:: bash
 
     root@ su - postgres
@@ -34,11 +38,12 @@ Install IPBlocker
     ipblocker$ . ipblocker_env/bin/activate
     (ipblocker_env)ipblocker$ easy_install -f http://www.albany.edu/~ja6447/ipblocker/ ipblocker snort pynfdump
 
-Setup cisco library
+Setup Router Access
 -------------------
-To use the cisco library you'll need to create a ~/.cisco/credentials file.  This file should contain
-three tab delimited columns consisting of the router username, the password, and the enable password.
-If any of these values are not needed they should be set to 'None'
+To access the router using the cisco library you'll need to create a
+~/.cisco/credentials file.  This file should contain three tab delimited
+columns consisting of the router username, the password, and the enable
+password.  If any of these values are not needed they should be set to 'None'
 
 .. code-block:: bash
 
@@ -54,20 +59,6 @@ Example:
 .. code-block:: bash
 
     None    cisco   cisco
-
-Test cisco library
-------------------
-::
-
-    (ipblocker_env)ipblocker$ python
-    >>> from cisco import login
-    >>> c = login("router_ip")
-    >>> c is not None
-    True
-    >>> print c.nullroute_list()
-    [list of current nullrouted IPS]
-    >>> [Control-d]
-
 
 Make the initial ipblocker cfg file
 -----------------------------------
@@ -87,6 +78,21 @@ You will need to change the following:
     ipblocker$ chmod 600 ipblocker.cfg
     ipblocker$ editor ipblocker.cfg
 
+Test Router Access
+------------------
+
+This ensures that the cisco library is installed properly and that the
+credential file is correct.
+
+::
+
+    (ipblocker_env)ipblocker@ipblocker:~$ ipblocker-cli test_cisco_router_access
+    Attempting to login to 192.168.1.1
+    2010-10-29 11:34:27,498 - paramiko.transport - INFO - Connected (version 2.0, client Cisco-1.25)
+    2010-10-29 11:34:27,998 - paramiko.transport - INFO - Authentication (password) successful!
+    2010-10-29 11:34:28,002 - paramiko.transport - INFO - Secsh channel 1 opened.
+    Login Successful
+    Currently null-routing 1538 addresses
 
 Create the tables
 -----------------

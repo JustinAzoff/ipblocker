@@ -36,6 +36,10 @@ Install IPBlocker
 
 Setup cisco library
 -------------------
+To use the cisco library you'll need to create a ~/.cisco/credentials file.  This file should contain
+three tab delimited columns consisting of the router username, the password, and the enable password.
+If any of these values are not needed they should be set to 'None'
+
 .. code-block:: bash
 
     ipblocker$ mkdir ~/.cisco
@@ -44,6 +48,12 @@ Setup cisco library
     ipblocker$ editor ~/.cisco/credentials
     #add tab deliminated
     username        password        enablepassword
+
+Example:
+
+.. code-block:: bash
+
+    None    cisco   cisco
 
 Test cisco library
 ------------------
@@ -65,11 +75,17 @@ Using the example.cfg_
 
 .. _example.cfg: example.cfg
 
+You will need to change the following:
+
+* The database password that you set in the "Create database" step.
+* The database hostname if the database is running on a separate machine.
+* The nullrouter IP address
+
 .. code-block:: bash
 
     ipblocker$ cp docs/example.cfg ~/ipblocker.cfg #or /etc/ipblocker/ipblocker.cfg
     ipblocker$ chmod 600 ipblocker.cfg
-    ipblocker$ editor ipblocker.cfg #edit database and other passwords
+    ipblocker$ editor ipblocker.cfg
 
 
 Create the tables

@@ -38,8 +38,8 @@ Install IPBlocker
     ipblocker$ . ipblocker_env/bin/activate
     (ipblocker_env)ipblocker$ easy_install -f http://www.albany.edu/~ja6447/ipblocker/ ipblocker snort pynfdump
 
-Setup Router Access
--------------------
+Set up Router Access
+--------------------
 To access the router using the cisco library you'll need to create a
 ~/.cisco/credentials file.  This file should contain three tab delimited
 columns consisting of the router username, the password, and the enable
@@ -94,8 +94,11 @@ credential file is correct.
     Login Successful
     Currently null-routing 1538 addresses
 
-Create the tables
------------------
+Create the database tables
+--------------------------
+
+This creates the empty IPBlocker database tables.
+
 .. code-block:: python
 
     (ipblocker_env)ipblocker$ python
@@ -156,8 +159,8 @@ Test CLI
 
 
 
-Setup Crontab
--------------
+Set up Crontab
+--------------
 ::
 
     PATH=/bin:/usr/bin:/home/ipblocker/ipblocker_env/bin

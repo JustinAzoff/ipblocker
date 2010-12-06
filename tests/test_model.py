@@ -115,7 +115,6 @@ def test_dont_block():
     b = model.get_dont_block_record(IP)
     assert b is None
 
-
 def test_cleanup():
     B = model.Block 
     for x in B.query.filter(B.ip==IP).all():
@@ -135,3 +134,19 @@ def test_fishy():
 
     del_fishy(IP)
     assert is_fishy(IP) == False
+
+def test_search_string():
+    records = model.search_string("blah")
+    assert len(records) == 0
+
+    b = block_ip(IP, 'justin', "jfld blah bhkfsfds", 1000)
+    records = model.search_string("blah")
+
+    assert len(records) == 1
+    assert records[0] == b
+
+def test_cleanup_again():
+    B = model.Block 
+    for x in B.query.filter(B.ip==IP).all():
+        model.Session.delete(x)
+    model.Session.flush()

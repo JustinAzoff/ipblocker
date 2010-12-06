@@ -206,7 +206,8 @@ def get_ip(ip):
 
 def search_string(s):
     """Return all the block records that mention this string"""
-    return []
+    q = "%" + s + "%"
+    return Block.query.filter(Block.comment.ilike(q)).order_by(desc(Block.entered)).all()
 
 def get_blocked_ip(ip):
     """Return a single Blocked IP, or None if it is not currently blocked.

@@ -204,6 +204,10 @@ def get_ip(ip):
     """Return all the block records for this ip, most recent first"""
     return Block.query.filter(Block.ip==ip).order_by(desc(Block.entered)).all()
 
+def search_string(s):
+    """Return all the block records that mention this string"""
+    return []
+
 def get_blocked_ip(ip):
     """Return a single Blocked IP, or None if it is not currently blocked.
        Pending is considered Blocked, otherwise unblock_now won't work right"""
@@ -265,8 +269,7 @@ def get_dont_block_record(ip):
 def delete_dont_block_record(id):
     """Remove an ip from the list of don't block records"""
     dont_block.delete(dont_block.c.id==id).execute().close()
-    global dont_block_tree
-    dont_block_tree = None
+    del cache['dont_block_list']
 
 def was_force_unblocked(ip):
     """Was this IP forced to be 'unblocked now'?"""

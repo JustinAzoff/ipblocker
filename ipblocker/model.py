@@ -250,7 +250,7 @@ def add_dont_block_record(ip, who, comment):
     b = DontBlock(ip=ip, who=who, comment=comment)
     Session.add(b)
     Session.flush()
-    dont_block_list = None
+    del cache['dont_block_list']
     return b
 
 def get_dont_block_record(ip):

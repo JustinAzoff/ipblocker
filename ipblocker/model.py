@@ -15,7 +15,6 @@ methods for inspecting the database.
 import sqlalchemy
 from sqlalchemy import *
 from sqlalchemy.orm import *
-from sqlalchemy.exceptions import SQLError
 from sqlalchemy.dialects.postgresql import INET
 import sqlalchemy.types as sqltypes
 import ConfigParser

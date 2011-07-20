@@ -323,7 +323,8 @@ def block_ip(ip, who, comment, duration, flag_traffic=False, extend_only=False):
     if b:
         if b.who != who:
             b.flag_traffic = flag_traffic
-            b.comment += "\n" + comment
+            if comment not in b.comment:
+                b.comment += "\n" + comment
         if not ( extend_only and b.unblock_delta > diff ):
             b.unblock_at = unblock_at
         b.who = who

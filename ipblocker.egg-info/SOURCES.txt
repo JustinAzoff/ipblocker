@@ -10,6 +10,7 @@ docs/diagram.png
 docs/example.cfg
 docs/example_session.rst
 docs/index.rst
+docs/links.rst
 docs/make.bat
 docs/make_diagram
 docs/model.rst

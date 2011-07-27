@@ -72,7 +72,7 @@ def main(force_block=False):
         try :
             block(ip, alerts, force_block)
         except Exception, e:
-            print "Error blocking", ip, e
+            logger.exception("Error blocking %s" % ip)
     if get_block_pending():
         wakeup_backend()
     disconnect()

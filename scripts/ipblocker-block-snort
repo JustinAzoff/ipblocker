@@ -69,7 +69,10 @@ def block(ip, alerts, force_block=False):
 
 def main(force_block=False):
     for ip, alerts in do_sigs():
-        block(ip, alerts, force_block)
+        try :
+            block(ip, alerts, force_block)
+        except Exception, e:
+            print e
     if get_block_pending():
         wakeup_backend()
     disconnect()

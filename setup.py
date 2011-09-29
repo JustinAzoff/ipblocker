@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import sys, os
 from glob import glob
 
-version = '0.6.5'
+version = '0.6.6'
 
 setup(name='ipblocker',
     version=version,
@@ -33,6 +33,7 @@ setup(name='ipblocker',
         'console_scripts': [
             'ipblocker-block-spamhaus     = ipblocker.block_spamhaus:main',
             'ipblocker-block-zeustracker  = ipblocker.block_zeustracker:main',
+            'ipblocker-block-snort        = ipblocker.block_snort:main',
         ]
     },
     test_suite='nose.collector',

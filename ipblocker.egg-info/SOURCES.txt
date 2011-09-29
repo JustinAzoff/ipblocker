@@ -16,7 +16,9 @@ docs/make_diagram
 docs/model.rst
 docs/overview.rst
 docs/setup.rst
+docs/snort_rules.csv
 ipblocker/__init__.py
+ipblocker/block_snort.py
 ipblocker/block_spamhaus.py
 ipblocker/block_zeustracker.py
 ipblocker/config.py
@@ -42,7 +44,6 @@ ipblocker_service/run2
 ipblocker_service/env/HOME
 ipblocker_service/env/PATH
 scripts/ipblocker-block-netflow
-scripts/ipblocker-block-snort
 scripts/ipblocker-block-stdin
 scripts/ipblocker-cli
 scripts/ipblocker-gen-nfdump-filter

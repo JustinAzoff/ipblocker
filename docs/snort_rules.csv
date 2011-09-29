@@ -1,0 +1,3 @@
+rule,minimum,subnet_minimum,block_time
+ET SCAN LibSSH Based Frequent SSH Connections Likely BruteForce Attack,10,2,7d
+VNC Scan 5900-5920,10,2,14d

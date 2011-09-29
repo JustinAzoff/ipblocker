@@ -32,6 +32,10 @@ class SourceBlocker:
         used as the comment in the database"""
         return simplejson.dumps(record)
 
+    def get_duration_from_record(self, record):
+        """Return the block duration"""
+        return self.duration
+
     def block(self):
         """call get_records() and block each record returned.  If must_exist_in_source
         is True, unblock any addresses that were previously blocked, but are no longer
@@ -49,6 +53,7 @@ class SourceBlocker:
         for r in all:
             msg = self.serialize_record(r)
             ip = self.get_ip_from_record(r)
+            duration = self.get_duration_from_record(r)
             if not self.model.ok_to_block(ip):
                 logger.debug("Not DB-blocking %s" % ip)
                 continue
@@ -58,7 +63,7 @@ class SourceBlocker:
                     logger.debug("DB-re-blocking %s" % ip)
                 else:
                     logger.debug("DB-blocking %s" % ip)
-                self.model.block_ip(ip=ip, who=self.blocker, comment=msg, duration=self.duration,flag_traffic=self.flag_traffic)
+                self.model.block_ip(ip=ip, who=self.blocker, comment=msg, duration=duration,flag_traffic=self.flag_traffic)
                 
 
         if self.model.get_block_pending() or self.model.get_unblock_pending():

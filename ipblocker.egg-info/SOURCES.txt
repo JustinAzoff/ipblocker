@@ -29,6 +29,7 @@ ipblocker/notify.py
 ipblocker/nullroute_audit.py
 ipblocker/nullroute_manager.py
 ipblocker/source_blocker.py
+ipblocker/tail.py
 ipblocker/util.py
 ipblocker.egg-info/PKG-INFO
 ipblocker.egg-info/SOURCES.txt
@@ -44,6 +45,7 @@ ipblocker_service/run2
 ipblocker_service/env/HOME
 ipblocker_service/env/PATH
 scripts/ipblocker-block-netflow
+scripts/ipblocker-block-snort-realtime
 scripts/ipblocker-block-stdin
 scripts/ipblocker-cli
 scripts/ipblocker-gen-nfdump-filter

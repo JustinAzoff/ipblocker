@@ -1,0 +1,70 @@
+#!/usr/bin/env python
+import sys
+import os
+import csv
+
+from ipblocker.tail import tail
+from ipblocker import model
+from ipblocker.util import wakeup_backend
+
+class FileBackedSet:
+    def __init__(self, filename):
+        self.filename = filename
+        self.make_set()
+
+    def make_set(self):
+        self.mtime = os.stat(self.filename).st_mtime
+        self.set = set(self.make_keys())
+
+    def make_keys(self):
+        return open(self.filename).read().split()
+
+    def __contains__(self, key):
+        if os.stat(self.filename).st_mtime != self.mtime:
+            self.make_set()
+        return key in self.set
+
+class RejectRulesSet(FileBackedSet):
+    def make_keys(self):
+        f = open(self.filename)
+        rule_ids = [l.split(",")[0] for l in f]
+        f.close()
+        return rule_ids
+
+def get_alerts(fn):
+    f = tail(fn)
+    c = csv.reader(f)
+    for a in c:
+        sig  = a[2]
+        rule = a[4]
+        src = a[6]
+        dst = a[8]
+        yield dict(sig=sig,rule=rule,src=src,dst=dst)
+
+
+def snort_block(alert):
+    msg = "%(src)s -> %(dst)s -- %(rule)s" % alert
+    
+    for a in alert['dst'], alert['src']:
+        if model.ok_to_block(a):
+            print "Blocking", a, "for", msg
+            model.block_ip(a, "snort-realtime", msg, "30d")
+            wakeup_backend()
+            return
+
+def block_realtime(rules, alerts):
+    blockable_ids = RejectRulesSet(rules)
+
+    for a in get_alerts(alerts):
+        if a['sig'] in blockable_ids:
+            snort_block(a)
+
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        sys.stderr.write("Usage: %s reject_rules.csv alerts.csv\n" % sys.argv[0])
+        sys.exit(1)
+
+    rules = sys.argv[1]
+    alerts = sys.argv[2]
+
+    block_realtime(rules, alerts)

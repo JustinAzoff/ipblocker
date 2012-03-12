@@ -17,7 +17,7 @@ def tail(fn):
             last = time.time()
             size = getsize()
         else:
-            time.sleep(5)
+            time.sleep(1)
             if time.time() - last > 120 and getsize() < size:
                 f.close()
                 f = open(fn)

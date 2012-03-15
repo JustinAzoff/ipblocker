@@ -3,7 +3,7 @@ import sys
 import os
 import csv
 
-from ipblocker.tail import tail
+from ipblocker.tail import multitail
 from ipblocker import model
 from ipblocker.util import wakeup_backend
 
@@ -31,9 +31,10 @@ class RejectRulesSet(FileBackedSet):
         f.close()
         return rule_ids
 
-def get_alerts(fn):
-    f = tail(fn)
-    c = csv.reader(f)
+def get_alerts(alerts_files):
+    f = multitail(fn)
+    alerts = (line for (fn, line) in f)
+    c = csv.reader(alerts)
     for a in c:
         sig  = a[2]
         rule = a[4]
@@ -53,19 +54,19 @@ def snort_block(alert):
             wakeup_backend()
             return
 
-def block_realtime(rules, alerts):
+def block_realtime(rules, alerts_files):
     blockable_ids = RejectRulesSet(rules)
 
-    for a in get_alerts(alerts):
+    for a in get_alerts(alerts_files):
         if a['sig'] in blockable_ids:
             snort_block(a)
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        sys.stderr.write("Usage: %s reject_rules.csv alerts.csv\n" % sys.argv[0])
+    if len(sys.argv) < 3:
+        sys.stderr.write("Usage: %s reject_rules.csv alerts.csv [alerts.csv]\n" % sys.argv[0])
         sys.exit(1)
 
     rules = sys.argv[1]
-    alerts = sys.argv[2]
+    alerts = sys.argv[2:]
 
     block_realtime(rules, alerts)

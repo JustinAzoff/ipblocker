@@ -32,7 +32,7 @@ class RejectRulesSet(FileBackedSet):
         return rule_ids
 
 def get_alerts(alerts_files):
-    f = multitail(fn)
+    f = multitail(alerts_files)
     alerts = (line for (fn, line) in f)
     c = csv.reader(alerts)
     for a in c:

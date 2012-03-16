@@ -23,6 +23,7 @@ ipblocker/block_spamhaus.py
 ipblocker/block_zeustracker.py
 ipblocker/config.py
 ipblocker/fake_ciscolib.py
+ipblocker/filebackedset.py
 ipblocker/logger.py
 ipblocker/model.py
 ipblocker/notify.py

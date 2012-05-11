@@ -30,10 +30,10 @@ def main(output_file, flagged=False, dest_only=False, base_filter=None):
         q = q.filter(model.Block.flag_traffic==True)
     else:
         q = q.filter(model.or_(
-            #still blocked
+            #still blocked or
             model.Block.unblocked==None,
-            #flag is true and blocked via portal
-            model.and_(model.Block.flag_traffic==True,  model.Block.who.like("portal%"))
+            #flag is true
+            model.and_(model.Block.flag_traffic==True)
         ))
 
     q = q.order_by(model.desc(model.Block.entered))

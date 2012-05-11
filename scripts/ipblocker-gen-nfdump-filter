@@ -28,6 +28,13 @@ def main(output_file, flagged=False, dest_only=False, base_filter=None):
     q = model.Block.query
     if flagged:
         q = q.filter(model.Block.flag_traffic==True)
+    else:
+        q = q.filter(model.or_(
+            #still blocked
+            model.Block.unblocked==None,
+            #flag is true and blocked via portal
+            model.and_(model.Block.flag_traffic==True,  model.Block.who.like("portal%"))
+        ))
 
     q = q.order_by(model.desc(model.Block.entered))
     for b in q:
@@ -36,11 +43,10 @@ def main(output_file, flagged=False, dest_only=False, base_filter=None):
         if b.ip in seen: continue
         seen.add(b.ip)
 
-        if ((b.unblocked==None and (b.flag_traffic or flagged==False))) or ('portal' in b.who and b.flag_traffic):
-            if '/' in b.ip:
-                cidr.append(b.ip)
-            else:
-                single.append(b.ip)
+        if '/' in b.ip:
+            cidr.append(b.ip)
+        else:
+            single.append(b.ip)
 
     if single:
         if dest_only:

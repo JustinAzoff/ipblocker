@@ -36,6 +36,10 @@ class SourceBlocker:
         """Return the block duration"""
         return self.duration
 
+    def get_flag_from_record(self, record):
+        """Return whether or not traffic should be flagged"""
+        return self.flag_traffic
+
     def block(self):
         """call get_records() and block each record returned.  If must_exist_in_source
         is True, unblock any addresses that were previously blocked, but are no longer

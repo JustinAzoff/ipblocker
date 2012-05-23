@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import sys, os
 from glob import glob
 
-version = '0.6.12'
+version = '0.7.0'
 
 setup(name='ipblocker',
     version=version,
@@ -24,6 +24,7 @@ setup(name='ipblocker',
         "WebHelpers",
         "cisco",
         "tcpsleep",
+        "cif",
         # -*- Extra requirements: -*-
     ],
     entry_points= {
@@ -34,6 +35,7 @@ setup(name='ipblocker',
             'ipblocker-block-spamhaus     = ipblocker.block_spamhaus:main',
             'ipblocker-block-zeustracker  = ipblocker.block_zeustracker:main',
             'ipblocker-block-snort        = ipblocker.block_snort:main',
+            'ipblocker-block-cif          = ipblocker.block_cif:main',
         ]
     },
     test_suite='nose.collector',

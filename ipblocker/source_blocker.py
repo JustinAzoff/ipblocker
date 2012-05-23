@@ -58,6 +58,7 @@ class SourceBlocker:
             msg = self.serialize_record(r)
             ip = self.get_ip_from_record(r)
             duration = self.get_duration_from_record(r)
+            flag_traffic = self.get_flag_from_record(r)
             if not self.model.ok_to_block(ip):
                 logger.debug("Not DB-blocking %s" % ip)
                 continue
@@ -67,7 +68,7 @@ class SourceBlocker:
                     logger.debug("DB-re-blocking %s" % ip)
                 else:
                     logger.debug("DB-blocking %s" % ip)
-                self.model.block_ip(ip=ip, who=self.blocker, comment=msg, duration=duration,flag_traffic=self.flag_traffic)
+                self.model.block_ip(ip=ip, who=self.blocker, comment=msg, duration=duration,flag_traffic=flag_traffic)
                 
 
         if self.model.get_block_pending() or self.model.get_unblock_pending():

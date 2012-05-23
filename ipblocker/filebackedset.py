@@ -1,3 +1,4 @@
+import os
 class FileBackedSet:
     def __init__(self, filename):
         self.filename = filename

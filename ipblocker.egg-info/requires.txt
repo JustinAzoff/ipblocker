@@ -1,5 +1,0 @@
-SQLAlchemy >= 0.4
-httplib2
-WebHelpers
-cisco
-tcpsleep

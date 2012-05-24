@@ -1,8 +1,0 @@
-[paste.app_install]
-main = paste.script.appinstall:Installer
-
-[console_scripts]
-ipblocker-block-spamhaus = ipblocker.block_spamhaus:main
-ipblocker-block-zeustracker = ipblocker.block_zeustracker:main
-ipblocker-block-snort = ipblocker.block_snort:main
-

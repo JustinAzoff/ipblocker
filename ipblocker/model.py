@@ -82,6 +82,7 @@ blocks = Table('blocks', metadata,
     Column('unblock_now',   Boolean, default=False,nullable=False),
     Column('flag_traffic',  Boolean, index=True,default=False,nullable=False),
 )
+Index('blocks_ip_unique', blocks.c.ip, blocks.c.blocked, unique=True)
 
 dont_block = Table('dont_block', metadata,
     Column('id',        Integer, primary_key=True),

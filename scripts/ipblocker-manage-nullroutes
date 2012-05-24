@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 
 from ipblocker import model
-import cisco
 from ipblocker.config import config
 
 from ipblocker.nullroute_manager import Manager
+import warnings
+warnings.simplefilter('ignore', DeprecationWarning)
+import cisco
+warnings.resetwarnings()
 
 IP = config.get("nullrouter","ip")
 

@@ -16,7 +16,7 @@ class ZeusBlocker(SourceBlocker):
 
 
     def get_records(self):
-        h = httplib2.Http(os.path.expanduser("~/.httplib2_cache"))
+        h = httplib2.Http(cache=os.path.expanduser("~/.httplib2_cache"), ca_certs='/etc/ssl/certs/ca-certificates.crt')
         logger.debug("Fetching IP list from the zeus tracker")
         resp, content = h.request("https://zeustracker.abuse.ch/blocklist.php?download=ipblocklist")
         ips = content.split("\n\n")[1].split()

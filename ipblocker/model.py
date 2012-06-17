@@ -82,7 +82,9 @@ blocks = Table('blocks', metadata,
     Column('unblock_now',   Boolean, default=False,nullable=False),
     Column('flag_traffic',  Boolean, index=True,default=False,nullable=False),
 )
-Index('blocks_ip_unique', blocks.c.ip, blocks.c.blocked, unique=True)
+Index('blocks_ip_unique', blocks.c.ip, postgresql_where = blocks.c.blocked == None, unique=True)
+Index("idx_blocked_null", blocks.c.blocked, postgresql_where = blocks.c.blocked == None)
+Index("idx_unblocked_null", blocks.c.blocked, postgresql_where = blocks.c.blocked != None)
 
 dont_block = Table('dont_block', metadata,
     Column('id',        Integer, primary_key=True),
@@ -394,8 +396,6 @@ mapper(Block, blocks)
 mapper(DontBlock, dont_block)
 mapper(Fishy, fishy)
 
-#CREATE INDEX idx_blocked_null   ON blocks (blocked)   WHERE blocked IS NULL;
-#CREATE INDEX idx_unblocked_null ON blocks (unblocked) WHERE unblocked IS NOT NULL;
 
 __all__ = '''
     Block DontBlockException

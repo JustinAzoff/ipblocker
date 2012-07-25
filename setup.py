@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import sys, os
 from glob import glob
 
-version = '0.7.2'
+version = '0.7.3'
 
 setup(name='ipblocker',
     version=version,

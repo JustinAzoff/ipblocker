@@ -67,7 +67,7 @@ class SourceBlocker:
                 if block_record:
                     logger.debug("DB-re-blocking %s" % ip)
                 else:
-                    logger.debug("DB-blocking %s" % ip)
+                    logger.info("DB-blocking %s" % ip)
                 self.model.block_ip(ip=ip, who=self.blocker, comment=msg, duration=duration,flag_traffic=flag_traffic)
                 
 

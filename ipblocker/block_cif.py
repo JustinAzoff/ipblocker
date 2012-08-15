@@ -15,11 +15,13 @@ class CifBlocker(SourceBlocker):
     def get_records(self):
         host = config.get("cif","host")
         apikey = config.get("cif","apikey")
+        severity = config.get("cif", "severity")  #medium or such
+        confidence = config.get("cif", "confidence") # 85 or so
 
         records = []
         c = Client(host, apikey, no_verify_tls=True)
         for feed in 'infrastructure/malware', 'infrastructure/botnet', 'infrastructure/scan':
-            records.extend(c.GET(feed, severity="medium", confidence="85", simple=True)['feed']['entry'])
+            records.extend(c.GET(feed, severity=severity, confidence=confidence, simple=True)['feed']['entry'])
         return records
 
     def get_flag_from_record(self, record):

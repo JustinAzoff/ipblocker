@@ -208,7 +208,7 @@ def get_ip(ip):
 
 def search_ip(ip):
     """Return all the block records for this ip, including cidr blocks,  most recent first"""
-    return Block.query.filter(Block.ip.op(">>")(ip)).order_by(desc(Block.entered)).all()
+    return Block.query.filter(or_(Block.ip==ip, Block.ip.op(">>")(ip))).order_by(desc(Block.entered)).all()
 
 def search_string(s):
     """Return all the block records that mention this string"""

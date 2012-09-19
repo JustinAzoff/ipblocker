@@ -34,7 +34,7 @@ def snort_block(alert):
         if model.ok_to_block(a):
             print "Blocking", a, "for", msg
             sys.stdout.flush()
-            model.block_ip(a, "snort-realtime", msg, "30d")
+            model.block_ip(a, "snort-realtime", msg, "30d", flag_traffic=True)
             wakeup_backend()
             return
 

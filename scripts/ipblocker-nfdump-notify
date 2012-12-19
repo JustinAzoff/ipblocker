@@ -20,8 +20,10 @@ def unique(data):
             yield x
             seen.add(x)
 
-def get_report_txt(fn, filter):
-    result = list(pynfdump.search_file(fn, filterfile=filter))
+def get_report_txt(data_dir, profile, sources, filename, filter):
+    n = pynfdump.Dumper(data_dir, profile=profile, sources=["edge1", "edge2"])
+    n.set_where(filename=filename)
+    result = list(n.search("", filterfile=filter))
     if not result:
         return
 
@@ -54,8 +56,8 @@ def get_report_txt(fn, filter):
     return out
 
 
-def export_file(notify, fn, filter):
-    txt = get_report_txt(fn, filter)
+def export_file(notify, data_dir, profile, sources, filename, filter):
+    txt = get_report_txt(data_dir, profile, sources, filename, filter)
     if txt:
         txt = "To: %s\n%s" % (', '.join(notify), txt)
         s = smtplib.SMTP("localhost")
@@ -66,18 +68,22 @@ def main():
     from optparse import OptionParser
     parser = OptionParser()
     parser.add_option("-i", "--filter",    dest="filter",     action="store",  help="filter file")
-    parser.add_option("-f", "--file",      dest="file",       action="store",  help="single file")
+    parser.add_option("-d", "--data",      dest="data",       action="store",  help="data directory")
+    parser.add_option("-p", "--profile",   dest="profile",    action="store",  help="profile", default="live")
+    parser.add_option("-s", "--sources",   dest="sources",    action="store",  help="sources")
+    parser.add_option("-f", "--filename",  dest="filename",   action="store",  help="filename")
     parser.add_option("-n", "--notify",    dest="notify",     action="append", help="email addresses to notify")
 
     (options, args) = parser.parse_args()
 
     o = options
 
-    if not o.notify or not o.file:
+    if not o.notify or not o.filename or not o.sources or not o.data:
         parser.print_help()
         sys.exit(1)
 
-    return export_file(o.notify, o.file, o.filter)
+    sources = o.sources.split(":")
+    return export_file(o.notify, o.data, o.profile, sources, o.filename, o.filter)
 
 if __name__ == "__main__":
     main()

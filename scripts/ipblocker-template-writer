@@ -14,7 +14,10 @@ template_output = config.get("template","output")
 post_command    = config.get("template","post_command")
 
 def maybe_write(filename, output):
-    current = open(filename).read()
+    try :
+        current = open(filename).read()
+    except IOError:
+        current = ""
     if current == output:
         return False
     temp_out = filename + ".new"

@@ -1,0 +1,6 @@
+#!/bin/sh
+while true;do
+    killall ipblocker-block-exabgp-process
+    ipblocker-block-exabgp-process
+    sleep 1
+done

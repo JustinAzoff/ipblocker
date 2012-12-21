@@ -8,6 +8,7 @@ import os
 import subprocess
 import time
 import sys
+import signal
 
 def write(line):
     sys.stdout.write(line + "\n")
@@ -23,16 +24,25 @@ def make_route(b):
 
 def main():
     while True:
+        signal.alarm(10)
         block_pending   = model.get_block_pending()
         unblock_pending = model.get_unblock_pending()
+        signal.alarm(10)
 
         for b in block_pending:
             write("announce " + make_route(b))
-            b.set_blocked()
 
         for b in unblock_pending:
             write("withdraw " + make_route(b))
+
+        for b in block_pending:
+            signal.alarm(10)
+            b.set_blocked()
+
+        for b in unblock_pending:
+            signal.alarm(10)
             b.set_unblocked()
+        signal.alarm(0)
         time.sleep(1)
 
 if __name__ == "__main__":

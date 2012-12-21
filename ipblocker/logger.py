@@ -1,5 +1,6 @@
 import logging
 import logging.config
+import os
 
 env = os.getenv("IPBLOCKER_CONFIG")
 if env:

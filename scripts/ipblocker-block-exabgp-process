@@ -1,0 +1,39 @@
+#!/usr/bin/env python
+
+from ipblocker import model
+from ipblocker.config import config
+
+import socket
+import os
+import subprocess
+import time
+import sys
+
+def write(line):
+    sys.stdout.write(line + "\n")
+    sys.stdout.flush()
+
+def make_route(b):
+    if ':' not in b.ip:
+        next_hop = "192.168.127.1"
+    else:
+        next_hop = "2001:DB8::DEAD:BEEF"
+
+    return "route %s next-hop %s community [ no-export ]" % (b.ip, next_hop)
+
+def main():
+    while True:
+        block_pending   = model.get_block_pending()
+        unblock_pending = model.get_unblock_pending()
+
+        for b in block_pending:
+            write("announce " + make_route(b))
+            b.set_blocked()
+
+        for b in unblock_pending:
+            write("withdraw " + make_route(b))
+            b.set_unblocked()
+        time.sleep(1)
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,43 @@
+#!/usr/bin/env python
+
+from ipblocker import model
+from ipblocker.config import config
+
+import socket
+import os
+import subprocess
+
+from mako.template import Template
+
+template_input  = config.get("template","input")
+template_output = config.get("template","output")
+post_command    = config.get("template","post_command")
+
+def main():
+    t = Template(filename=template_input)
+    blocked = model.get_all_that_should_be_blocked()
+    blocked_v4 = [b for b in model.get_all_that_should_be_blocked() if ':' not in b.ip]
+    blocked_v6 = [b for b in model.get_all_that_should_be_blocked() if ':' in b.ip]
+    pending = [b for b in blocked if not b.blocked]
+    ip = socket.gethostbyaddr(socket.gethostname())[2][0]
+    output = t.render(
+        ip=ip,
+        blocked=blocked,
+        blocked_v4=blocked_v4,
+        blocked_v6=blocked_v6)
+
+    temp_out = template_output + ".new"
+
+    with open(temp_out, 'w') as f:
+        f.write(output)
+
+    os.rename(temp_out, template_output)
+    subprocess.call(post_command, shell=True)
+    return
+    for b in pending:
+        b.set_blocked()
+    for b in model.get_unblock_pending():
+        b.set_unblocked()
+
+if __name__ == "__main__":
+    main()

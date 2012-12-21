@@ -13,6 +13,17 @@ template_input  = config.get("template","input")
 template_output = config.get("template","output")
 post_command    = config.get("template","post_command")
 
+def maybe_write(filename, output):
+    current = open(filename).read()
+    if current == output:
+        return False
+    temp_out = filename + ".new"
+    with open(temp_out, 'w') as f:
+        f.write(output)
+
+    os.rename(temp_out, filename)
+    return True
+
 def main():
     t = Template(filename=template_input)
     blocked = model.get_all_that_should_be_blocked()
@@ -26,13 +37,9 @@ def main():
         blocked_v4=blocked_v4,
         blocked_v6=blocked_v6)
 
-    temp_out = template_output + ".new"
-
-    with open(temp_out, 'w') as f:
-        f.write(output)
-
-    os.rename(temp_out, template_output)
-    subprocess.call(post_command, shell=True)
+    if maybe_write(template_output, output):
+        print "Changed"
+        subprocess.call(post_command, shell=True)
     return
     for b in pending:
         b.set_blocked()

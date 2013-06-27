@@ -249,7 +249,6 @@ def list_dont_block_records():
 cache = {}
 def get_dont_block_subnet_list():
     """Return the list of don't block records"""
-    global cache
     if 'dont_block_list' in cache and time.time() - cache['dont_block_list'][0] < 5:
         return cache['dont_block_list'][1]
     dont_block_list = [(IPy.IP(s.ip), s) for s in list_dont_block_records()]
@@ -261,7 +260,8 @@ def add_dont_block_record(ip, who, comment):
     b = DontBlock(ip=ip, who=who, comment=comment)
     Session.add(b)
     Session.flush()
-    del cache['dont_block_list']
+    if 'dont_block_list' in cache:
+        del cache['dont_block_list']
     return b
 
 def get_dont_block_record(ip):
@@ -276,7 +276,8 @@ def get_dont_block_record(ip):
 def delete_dont_block_record(id):
     """Remove an ip from the list of don't block records"""
     dont_block.delete(dont_block.c.id==id).execute().close()
-    del cache['dont_block_list']
+    if 'dont_block_list' in cache:
+        del cache['dont_block_list']
 
 def was_force_unblocked(ip):
     """Was this IP forced to be 'unblocked now'?"""

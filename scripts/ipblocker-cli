@@ -135,6 +135,34 @@ class ipbcli(Cmd):
         else:
             print "Login Failed"
 
+    def do_whitelist_show(self, line):
+        for x in model.list_dont_block_records():
+            print "%-2d %-18s %s %s" % (x.id, x.ip, x.who, x.comment)
+
+    def do_whitelist_add(self, line):
+        """Whitelist an ip or netblock
+        Usage: whitelist_add ip comment"""
+        user = os.getenv("USER")
+        parts = line.split(None, 1)
+        if len(parts)!=2:
+            print "Wrong number of arguments"
+            print "Usage: whitelist_add ip comment"""
+            return
+        ip, comment = parts
+        model.add_dont_block_record(ip, user, comment)
+
+    def do_whitelist_remove(self, line):
+        """Remove a whitelist entry
+        Usage: whitelist_remove id
+        
+        get the id from whitelist_show
+        """
+        if not line:
+            print "Usage: whitelist_remove id"
+            return
+        id = int(line)
+        model.delete_dont_block_record(id)
+
     def do_EOF(self, x):
         sys.exit(0)
 

@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import sys, os
 from glob import glob
 
-version = '0.8.3'
+version = '0.8.4'
 
 setup(name='ipblocker',
     version=version,
@@ -19,14 +19,13 @@ setup(name='ipblocker',
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        "SQLAlchemy >= 0.4",
-        "httplib2",
+        "SQLAlchemy >= 0.8, <=1.0",
         "WebHelpers",
-        "cisco",
-        "tcpsleep",
-        "cif",
         # -*- Extra requirements: -*-
     ],
+    extras_require = {
+        'blockers':  ["httplib2","cif"],
+    },
     entry_points= {
         'paste.app_install': [
             'main   = paste.script.appinstall:Installer',

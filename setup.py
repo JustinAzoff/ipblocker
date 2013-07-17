@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import sys, os
 from glob import glob
 
-version = '0.8.4'
+version = '0.8.5'
 
 setup(name='ipblocker',
     version=version,
@@ -21,6 +21,7 @@ setup(name='ipblocker',
     install_requires=[
         "SQLAlchemy >= 0.8, <=1.0",
         "WebHelpers",
+        "IPy",
         # -*- Extra requirements: -*-
     ],
     extras_require = {

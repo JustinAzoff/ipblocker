@@ -25,7 +25,6 @@ import time
 from ipblocker.config import config
 from ipblocker import util
 
-import psycopg2
 import random
 import IPy
 

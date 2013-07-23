@@ -57,8 +57,9 @@ def ip_summary(flows):
     return ips
 
 def wakeup_backend():
+    return False
+    wakeup_host = config.get('db','host')
     import tcpsleep
-    host = config.get('db','host')
     return tcpsleep.client.wakeup(host=host, port=11112)
 
 

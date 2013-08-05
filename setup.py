@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import sys, os
 from glob import glob
 
-version = '0.8.6'
+version = '0.8.7'
 
 setup(name='ipblocker',
     version=version,
@@ -25,7 +25,7 @@ setup(name='ipblocker',
         # -*- Extra requirements: -*-
     ],
     extras_require = {
-        'blockers':  ["httplib2","cif"],
+        'blockers':  ["httplib2","cif","pygeoip"],
     },
     entry_points= {
         'paste.app_install': [

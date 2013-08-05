@@ -6,7 +6,7 @@ from ipblocker import model, logger
 from ipblocker.config import config
 from ipblocker import util
 from ipblocker.source_blocker import SourceBlocker
-import GeoIP
+import pygeoip
 
 class ZeusBlocker(SourceBlocker):
     blocker = 'zeus'
@@ -25,7 +25,7 @@ class ZeusBlocker(SourceBlocker):
         return records
 
     def remove_US(self, ips):
-        g=GeoIP.new(GeoIP.GEOIP_STANDARD)
+        g=pygeoip.GeoIP(config.get("geoip","path"))
         ok = [ip for ip in ips if g.country_code_by_addr(ip) != 'US']
         skipped = len(ips) - len(ok)
         logger.debug("removed %d US ips" % skipped)

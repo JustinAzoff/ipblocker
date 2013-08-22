@@ -17,7 +17,7 @@ def make_route(b):
     else:
         next_hop = "2001:DB8::DEAD:BEEF"
 
-    return "route %s next-hop %s community [ no-export ]" % (b.ip, next_hop)
+    return "route %s next-hop %s community [no-export]" % (b.ip, next_hop)
 
 def update(action, b):
     route = make_route(b)

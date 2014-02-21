@@ -39,24 +39,17 @@ def main():
 
         for b in block_pending:
             announce(b)
+            b.set_blocked()
             signal.alarm(10)
 
         for b in unblock_pending:
             withdraw(b)
-            signal.alarm(10)
-
-        for b in block_pending:
-            signal.alarm(10)
-            b.set_blocked()
-
-        for b in unblock_pending:
-            signal.alarm(10)
             b.set_unblocked()
+            signal.alarm(10)
+
         signal.alarm(0)
 
-        random_sleep = random.randint(850,1000)/1000.0
-        if random.random() < 1/20.0:
-            random_sleep -= 0.5
+        random_sleep = random.randint(550,1000)/1000.0
         time.sleep(random_sleep)
 
 if __name__ == "__main__":

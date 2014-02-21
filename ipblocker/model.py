@@ -322,10 +322,6 @@ def block_ip(ip, who, comment, duration, flag_traffic=False, extend_only=False):
     diff = datetime.timedelta(seconds=duration)
     unblock_at = now + diff
 
-    #if the duration is longer than 6 days, set the unblock time to exactly noon
-    if duration >= 60*60*24*6:
-        unblock_at = unblock_at.replace(hour=12,minute=0,second=0,microsecond=0)
-
     b = get_blocked_ip(ip)
     if b:
         if b.who != who:

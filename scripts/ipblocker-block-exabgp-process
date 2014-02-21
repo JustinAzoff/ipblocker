@@ -39,9 +39,11 @@ def main():
 
         for b in block_pending:
             announce(b)
+            signal.alarm(10)
 
         for b in unblock_pending:
             withdraw(b)
+            signal.alarm(10)
 
         for b in block_pending:
             signal.alarm(10)

@@ -1,5 +1,11 @@
 #!/usr/bin/env python
-from cif import Client
+# 2/24/2014 - changed CIF calls from API to the version 1 HTML client
+# severity option was removed in the new CIF calls
+# the entire dictionary creation of [feed] and [entry]
+# also no longer exists in the new CIF client
+
+#from cif import Client
+import cif_http_client
 
 from ipblocker import model, logger
 from ipblocker.config import config
@@ -13,16 +19,29 @@ class CifBlocker(SourceBlocker):
     flag_traffic = True
 
     def get_records(self):
+
+#       don't verify SSL certificates
+        http_options = {"verify": False}
         host = config.get("cif","host")
         apikey = config.get("cif","apikey")
-        severity = config.get("cif", "severity")  #medium or such
+#        severity = config.get("cif", "severity") 
         confidence = config.get("cif", "confidence") # 85 or so
 
+#        c = Client(host, apikey, no_verify_tls=True)
+
+        c = cif_http_client.Client(host, apikey,
+            http_options,
+            confidence=confidence,
+            nolog=True
+        )
+
         records = []
-        c = Client(host, apikey, no_verify_tls=True)
+
         for feed in 'infrastructure/malware', 'infrastructure/botnet', 'infrastructure/scan':
-            records.extend(c.GET(feed, severity=severity, confidence=confidence, simple=True)['feed']['entry'])
+#            records.extend(c.GET(feed, severity=severity, confidence=confidence, simple=True)['feed']['entry'])
+            records.extend(c.search(q=feed))
         return records
+
 
     def get_flag_from_record(self, record):
         return record.get("impact") != 'scanner'

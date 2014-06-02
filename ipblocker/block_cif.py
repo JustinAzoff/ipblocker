@@ -1,10 +1,5 @@
 #!/usr/bin/env python
-# 2/24/2014 - changed CIF calls from API to the version 1 HTML client
-# severity option was removed in the new CIF calls
-# the entire dictionary creation of [feed] and [entry]
-# also no longer exists in the new CIF client
 
-#from cif import Client
 import cif_http_client
 
 from ipblocker import model, logger
@@ -24,10 +19,7 @@ class CifBlocker(SourceBlocker):
         http_options = {"verify": False}
         host = config.get("cif","host")
         apikey = config.get("cif","apikey")
-#        severity = config.get("cif", "severity") 
         confidence = config.get("cif", "confidence") # 85 or so
-
-#        c = Client(host, apikey, no_verify_tls=True)
 
         c = cif_http_client.Client(host, apikey,
             http_options,
@@ -38,7 +30,6 @@ class CifBlocker(SourceBlocker):
         records = []
 
         for feed in 'infrastructure/malware', 'infrastructure/botnet', 'infrastructure/scan':
-#            records.extend(c.GET(feed, severity=severity, confidence=confidence, simple=True)['feed']['entry'])
             records.extend(c.search(q=feed))
         return records
 
